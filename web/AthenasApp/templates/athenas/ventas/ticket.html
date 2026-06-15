@@ -1,0 +1,33 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+{% block title %}Ticket {{ venta.numero_ticket }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/ventas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="ticket">
+  <h2>Despensa Athenas</h2>
+  <div>Ticket: {{ venta.numero_ticket }}</div>
+  <div>Fecha: {{ venta.fecha|date:"d/m/Y H:i" }}</div>
+  <hr>
+  <table>
+    <thead><tr><th>Desc</th><th class="r">Cant</th><th class="r">PU</th><th class="r">Sub</th></tr></thead>
+    <tbody>
+      {% for d in detalles %}
+      <tr>
+        <td>{{ d.nombre_producto }}</td>
+        <td class="r">{{ d.cantidad }}</td>
+        <td class="r">{{ d.precio_unitario }}</td>
+        <td class="r">{{ d.subtotal }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <hr>
+  <div class="r">Total: ${{ venta.total_neto }}</div>
+  <p>¡Gracias por su compra!</p>
+
+  <button class="btn" onclick="window.print()">Imprimir</button>
+</section>
+{% endblock %}

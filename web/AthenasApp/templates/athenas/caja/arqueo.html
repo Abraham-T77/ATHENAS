@@ -1,0 +1,80 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+{% block title %}Arqueo de caja{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/caja.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Arqueo de caja</h1>
+
+  {% if not caja_activa %}
+    <p class="msg error">No hay una caja abierta para tu usuario.</p>
+    <a class="btn btn-primary" href="{% url 'caja_apertura' %}">Abrir caja</a>
+  {% else %}
+
+    <p>Completá el conteo físico. El total se calcula automáticamente.</p>
+
+    <form method="post" class="grid-venta" id="form-arqueo" style="margin-top:.75rem;">
+      {% csrf_token %}
+
+      {% for den in denominaciones %}
+        <div>
+          <label>${{ den }} x cantidad</label>
+          <input
+            class="form-control den"
+            data-den="{{ den }}"
+            name="den_{{ den }}"
+            type="number"
+            min="0"
+            step="1"
+            value="0"
+          >
+        </div>
+      {% endfor %}
+
+      <div style="grid-column:1/-1;display:flex;gap:1rem;justify-content:flex-end;margin-top:1rem;">
+        <div>
+          <label>Total efectivo contado</label>
+          <input id="total_contado" class="form-control" type="text" value="$0,00" readonly>
+        </div>
+        <div style="align-self:flex-end;">
+          <button type="submit" class="btn btn-primary">Guardar arqueo</button>
+          <a class="btn btn-light" href="{% url 'caja_estado' %}">Volver</a>
+        </div>
+      </div>
+    </form>
+
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  function recalc(){
+    let total = 0;
+
+    document.querySelectorAll('.den').forEach(inp => {
+      const den = parseFloat(inp.dataset.den || '0');
+      const cant = parseInt(inp.value || '0', 10) || 0;
+      total += den * cant;
+    });
+
+    const out = document.getElementById('total_contado');
+    if (out) {
+      // Formato simple tipo $12.345,67 para es-AR
+      out.value = '$' + total.toLocaleString('es-AR', { minimumFractionDigits: 2 });
+    }
+  }
+
+  document.querySelectorAll('.den').forEach(inp => {
+    inp.addEventListener('input', recalc);
+  });
+
+  recalc();
+})();
+</script>
+{% endblock %}

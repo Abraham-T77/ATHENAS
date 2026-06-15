@@ -1,0 +1,12 @@
+Django>=5.0,<6.0
+mysqlclient>=2.2.0
+python-dotenv>=1.0.1
+
+# Gráficos
+matplotlib>=3.8
+
+# Exportación PDF
+reportlab>=4.0
+
+# Exportación Excel
+openpyxl>=3.1

@@ -1,0 +1,49 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Alertas Generales{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/alertas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>Alertas Generales del Sistema</h1>
+
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Resultado</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for a in alertas %}
+            <tr class="{% if not a.exito %}nivel-alta{% endif %}">
+                <td>{{ a.fecha|date:"d/m/Y H:i" }}</td>
+                <td>{{ a.tipo }}</td>
+                <td>{{ a.descripcion }}</td>
+                <td>
+                    {% if a.exito %}
+                        ✔ OK
+                    {% else %}
+                        ✖ Error
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4">No hay alertas registradas.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="acciones">
+        <a href="{% url 'alertas_panel' %}" class="btn">Volver</a>
+    </div>
+
+</section>
+{% endblock %}

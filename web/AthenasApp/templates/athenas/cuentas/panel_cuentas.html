@@ -1,0 +1,37 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Panel de Cuentas Corrientes{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/cuentas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Cuentas Corrientes</h1>
+
+  <div class="acciones">
+    {# LISTADO DE CLIENTES #}
+    <a href="{% url 'cuenta_corriente_clientes' %}" class="btn-primary">Cuentas de Clientes</a>
+    {# LISTADO DE PROVEEDORES #}
+    <a href="{% url 'cuentas_proveedores' %}" class="btn-primary">Cuentas de Proveedores</a>
+  </div>
+
+  <p class="intro">
+    Desde este módulo podés consultar y administrar las cuentas corrientes
+    de clientes y proveedores, registrar pagos y visualizar saldos actualizados.
+  </p>
+
+  <div class="resumen">
+    <article>
+      <h3>Total de Clientes con Deuda</h3>
+      <p>${{ total_clientes_deuda }}</p>
+    </article>
+    <article>
+      <h3>Total de Proveedores con Saldo a Favor</h3>
+      <p>${{ total_proveedores_favor }}</p>
+    </article>
+  </div>
+</section>
+{% endblock %}

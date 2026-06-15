@@ -1,0 +1,275 @@
+/* ==========================================================
+   MÓDULO DE COMPRAS – Sistema Despensa Athenas
+   Integrado con la estética general definida en base.css
+   ========================================================== */
+
+/* ----- Contenedor principal ----- */
+.wrap {
+  padding: 1.5rem 2rem;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ----- Encabezado de página ----- */
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-head h1 {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.page-head .actions a {
+  margin-left: .6rem;
+}
+
+/* ----- Barra de filtros ----- */
+.filter-bar {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-bar input,
+.filter-bar select {
+  background: #0f141c;
+  border: 1px solid #243042;
+  border-radius: 8px;
+  padding: .45rem .6rem;
+  color: var(--text);
+  min-width: 160px;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* ----- Tablas ----- */
+.table-wrap {
+  overflow-x: auto;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: .6rem .8rem;
+  border-bottom: 1px solid #243042;
+}
+
+.table thead th {
+  background: #141a23;
+  color: var(--primary);
+  font-weight: 600;
+  text-align: left;
+}
+
+.table tbody tr:hover {
+  background: #18202a;
+}
+
+.table .ta-center {
+  text-align: center;
+}
+
+.table-empty {
+  text-align: center;
+  padding: 1rem;
+  color: var(--muted);
+}
+
+/* ----- Badges de estado ----- */
+.badge {
+  display: inline-block;
+  padding: .25rem .6rem;
+  border-radius: 8px;
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.badge-ok {
+  background: #123b2a;
+  color: #a7f3d0;
+  border: 1px solid #205c49;
+}
+
+.badge-pendiente {
+  background: #3f3b1a;
+  color: #fcd34d;
+  border: 1px solid #665c1f;
+}
+
+.badge-error {
+  background: #4b1e1e;
+  color: #fca5a5;
+  border: 1px solid #703232;
+}
+
+/* ----- Botones de acciones ----- */
+.btn {
+  border: 1px solid #243042;
+  background: #18202a;
+  color: var(--text);
+  padding: .45rem .8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all .2s;
+}
+
+.btn:hover {
+  background: #1f2937;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #0c141a;
+  border-color: transparent;
+}
+
+.btn-primary:hover {
+  filter: brightness(0.95);
+}
+
+.btn-light {
+  background: #2a3444;
+  color: #dbe4ff;
+  border-color: #2a3444;
+}
+
+.btn-light:hover {
+  filter: brightness(1.05);
+}
+
+.btn-success {
+  background: #205c49;
+  border-color: #205c49;
+  color: #a7f3d0;
+}
+
+.btn-danger {
+  background: #5a2727;
+  border-color: #703232;
+  color: #fca5a5;
+}
+
+/* ----- Bloque inferior fijo ----- */
+.actions-sticky {
+  position: sticky;
+  bottom: 0;
+  background: #141a23;
+  border-top: 1px solid #243042;
+  padding: 1rem;
+  text-align: right;
+  z-index: 10;
+}
+
+/* ----- Grilla de detalle de productos dentro de la compra ----- */
+.detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .6rem 1rem;
+  background: #141a23;
+  border-radius: 12px;
+  padding: .8rem;
+  margin-bottom: 1rem;
+}
+
+/* ----- Subtarjeta para datos del proveedor / compra ----- */
+.card {
+  background: var(--card);
+  border: 1px solid #243042;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card p {
+  margin: .3rem 0;
+}
+
+/* ----- Formulario de comprobante ----- */
+.file-uploader {
+  margin-top: 1rem;
+  background: #141a23;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px dashed #243042;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ----- Formularios generales dentro del módulo ----- */
+form input,
+form select,
+form textarea {
+  background: #0f141c;
+  color: var(--text);
+  border: 1px solid #243042;
+  border-radius: 8px;
+  padding: .5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 768px) {
+  .page-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .6rem;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions-sticky {
+    text-align: center;
+  }
+}
+
+/* --- Errores de validación (no rompen el layout) --- */
+.errorlist{
+  margin:.25rem 0 0;
+  padding:0;
+  list-style:none;
+  color:#fca5a5;
+  font-size:.85rem;
+}
+
+/* Si aparece un error dentro del grid del detalle, que ocupe su propia fila */
+.detalle-grid .errorlist{
+  grid-column: 1 / -1;
+}
+
+/* Inputs de solo lectura (subtotal) */
+input[readonly]{
+  background:#0f141c;
+  color:var(--text);
+  opacity:.9;
+}

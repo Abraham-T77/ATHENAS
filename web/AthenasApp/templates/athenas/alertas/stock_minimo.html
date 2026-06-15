@@ -1,0 +1,45 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Productos con Stock Mínimo{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/alertas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Productos con Stock Bajo o Agotado</h1>
+
+  <p class="intro">
+    Listado de productos cuyo stock actual se encuentra igual o por debajo del mínimo permitido.
+  </p>
+
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Categoría</th>
+        <th>Stock Actual</th>
+        <th>Stock Mínimo</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in productos %}
+      <tr class="proximo">
+        <td>{{ p.descripcion }}</td>
+        <td>{{ p.categoria.nombre|default:"—" }}</td>
+        <td>{{ p.stock_actual }}</td>
+        <td>{{ p.stock_minimo }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">No hay productos con stock crítico.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="acciones">
+    <a href="{% url 'alertas_panel' %}" class="btn">Volver</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Cerrar caja{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/caja.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Cerrar caja</h1>
+
+  {# Si la caja ya está cerrada, mostrar aviso y volver #}
+  {% if caja.estado != "ABIERTA" %}
+    <p class="msg error">
+      Esta caja ya está cerrada (estado actual: {{ caja.estado }}).
+    </p>
+    <a class="btn" href="{% url 'caja_lista' %}">Volver a la lista</a>
+  
+  {% else %}
+
+    <div class="grid-venta" style="margin-top:.75rem;">
+      <div>
+        <label>ID Caja</label>
+        <input class="form-control" value="{{ caja.id_caja|default:caja.pk }}" readonly>
+      </div>
+
+      <div>
+        <label>Fecha apertura</label>
+        <input class="form-control" value="{{ caja.fecha_apertura|date:'d/m/Y H:i' }}" readonly>
+      </div>
+
+      <div>
+        <label>Saldo inicial</label>
+        <input class="form-control" value="${{ caja.saldo_inicial|floatformat:2 }}" readonly>
+      </div>
+
+      <div>
+        <label>Estado</label>
+        <input class="form-control" value="{{ caja.estado }}" readonly>
+      </div>
+    </div>
+
+    <p style="margin-top:1rem;">
+      Al confirmar el cierre, el sistema calculará el saldo final de la caja
+      usando <code>caja.calcular_saldo()</code> y actualizará su estado a
+      <strong>CERRADA</strong>.
+    </p>
+
+    <form method="post" style="margin-top:1rem;">
+      {% csrf_token %}
+      <button type="submit" class="btn-primary">Confirmar cierre de caja</button>
+
+      <a class="btn" href="{% url 'caja_detalle' caja.pk %}">Ver movimientos</a>
+      <a class="btn" href="{% url 'caja_lista' %}">Cancelar</a>
+    </form>
+
+  {% endif %}
+</section>
+{% endblock %}

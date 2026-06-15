@@ -1,0 +1,69 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+{% block title %}Ajustes de stock{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/movimientos.css' %}">
+{% endblock %}
+{% block content %}
+<section class="panel">
+  <div class="d-flex justify-content-between align-items-center">
+    <h1 class="mb-0">Ajustes de stock</h1>
+    <a class="btn btn-primary" href="{% url 'ajuste_stock' %}">+ Nuevo ajuste</a>
+  </div>
+
+  <form method="get" class="filter-bar" style="margin:.75rem 0;">
+    <input class="form-control" type="text" name="q" value="{{ request.GET.q }}" placeholder="Buscar por producto o usuario">
+    <select class="form-select" name="tipo">
+      <option value="">Todos</option>
+      <option value="ENTRADA" {% if request.GET.tipo == "ENTRADA" %}selected{% endif %}>Entrada</option>
+      <option value="SALIDA"  {% if request.GET.tipo == "SALIDA" %}selected{% endif %}>Salida</option>
+    </select>
+    <button class="btn" type="submit">Filtrar</button>
+  </form>
+
+  <div class="table-wrap">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Producto</th>
+          <th>Tipo</th>
+          <th class="r">Cantidad</th>
+          <th>Usuario</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in items %}
+          <tr>
+            <td>{{ m.fecha|date:"d/m/Y H:i" }}</td>
+            <td>{{ m.producto.descripcion }}</td>
+            <td>{{ m.tipo }}</td>
+            <td class="r">{{ m.cantidad }}</td>
+            <td>{{ m.usuario.usuario }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="ta-center">Sin ajustes registrados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}&tipo={{ request.GET.tipo }}">«</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">«</span></li>
+    {% endif %}
+
+    <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+
+    {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}&tipo={{ request.GET.tipo }}">»</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">»</span></li>
+    {% endif %}
+  </ul>
+  {% endif %}
+</section>
+{% endblock %}

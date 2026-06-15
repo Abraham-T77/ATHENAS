@@ -1,0 +1,18 @@
+{% extends "athenas/base.html" %}
+{% block title %}Panel - Administrador{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Panel Administrador</h1>
+  <div class="grid-cards">
+    <a class="card" href="{% url 'compras_lista' %}">Compras</a>
+    <a class="card" href="{% url 'productos_lista' %}">Productos</a>
+    <a class="card" href="{% url 'ventas_lista' %}">Ventas</a>
+    <a class="card" href="{% url 'usuarios_lista' %}">Usuarios</a>
+    
+    <a class="card" href="{% url 'cuentas_panel' %}">Cuentas Corrientes</a>
+    <a class="card" href="{% url 'alertas_panel' %}">Alertas del Sistema</a>
+    <a class="card" href="{% url 'reportes_panel' %}">Reportes</a>
+    <a class="card" href="{% url 'bitacora_panel' %}">Bitácora</a>
+  </div>
+</section>
+{% endblock %}

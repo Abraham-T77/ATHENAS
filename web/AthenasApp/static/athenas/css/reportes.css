@@ -1,0 +1,161 @@
+/* =========================================================
+   MÓDULO: REPORTES Y GRÁFICOS
+   ========================================================= */
+
+/* Contenedor principal */
+section.reportes-panel {
+    padding: 2rem;
+}
+
+/* Tarjetas del panel principal */
+.reporte-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    border-left: 5px solid var(--primary);
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+}
+
+.report-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+/* Tablas */
+.report-table,
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.report-table th,
+.report-table td,
+.tabla th,
+.tabla td {
+    border: 1px solid var(--border);
+    padding: 0.7rem 0.8rem;
+    text-align: left;
+}
+
+.report-table th,
+.tabla th {
+    background: var(--bg-secondary);
+    color: var(--text-contrast);
+}
+
+/* =========================================================
+   ACCIONES (Volver, Exportar PDF/Excel)
+   ========================================================= */
+
+.acciones {
+    margin-top: 2rem !important;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;       /* para que en pantallas chicas no se rompa */
+}
+
+/* Botón base (Volver) */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 1.1rem;
+    background: var(--bg-secondary);
+    color: var(--text);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    font-weight: 500;
+    line-height: 1;        /* evita que la línea desplace verticalmente */
+    transition: 0.2s ease-in-out;
+}
+
+.btn:hover {
+    background: var(--primary);
+    color: #000;
+}
+
+/* Botones pequeños (PDF/Excel) */
+.btn-sm,
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    text-decoration: none;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    line-height: 1;
+    transition: 0.25s ease;
+}
+
+.btn-sm:hover,
+.btn-secondary:hover {
+    background: var(--primary);
+    color: #000;
+}
+
+/* Botones grandes del panel (en el panel de reportes) */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1.2rem;
+    background: var(--primary);
+    color: #000;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.25s ease;
+}
+
+.btn-primary:hover {
+    opacity: 0.85;
+}
+
+
+/* =========================================================
+   GRÁFICOS – Matplotlib
+   ========================================================= */
+
+.chart-container {
+    margin-top: 2rem;
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.chart {
+    width: 100%;
+    max-width: 700px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* =========================================================
+   Tablas dentro de reportes
+   ========================================================= */
+
+.r {
+    text-align: right;
+}
+
+/* Filas críticas (stock bajo) */
+.critico {
+    background: rgba(255, 0, 0, 0.15);
+}

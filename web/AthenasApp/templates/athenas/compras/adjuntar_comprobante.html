@@ -1,0 +1,25 @@
+{% extends 'athenas/base.html' %}
+{% load static %}
+
+{% block title %}Adjuntar Comprobante{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/compras.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="container">
+  <header class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Adjuntar Comprobante — Compra #{{ compra.id_compra }}</h1>
+    <a class="btn btn-light" href="{% url 'compras_detalle' compra.id_compra %}">Volver</a>
+  </header>
+
+  <form method="post" enctype="multipart/form-data" class="tarjeta">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="text-end">
+      <button type="submit" class="btn btn-primary">Subir</button>
+    </div>
+  </form>
+  <p class="mt-2" style="color:var(--muted)">Formatos permitidos: PDF, JPG, PNG (máx. 5MB).</p>
+</section>
+{% endblock %}

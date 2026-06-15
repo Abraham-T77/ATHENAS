@@ -1,0 +1,18 @@
+{% extends 'athenas/base.html' %}
+{% block title %}Editar Cliente{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  {% include 'athenas/includes/_messages.html' %}
+  <h3>Editar Cliente</h3>
+
+  <form method="post" class="mt-3">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="mt-3">
+      <a href="{% url 'clientes_lista' %}" class="btn btn-light">Cancelar</a>
+      <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+/* =========================================================
+   MÓDULO: CUENTAS CORRIENTES
+   Estilos coherentes con base.css
+   ========================================================= */
+
+section.cuentas-panel {
+  padding: 2rem;
+}
+
+.cuenta-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.2rem;
+  transition: transform 0.2s;
+}
+
+.cuenta-card:hover {
+  transform: translateY(-2px);
+}
+
+.cuenta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.cuenta-saldo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.table-cuentas {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.table-cuentas th,
+.table-cuentas td {
+  border: 1px solid var(--border);
+  padding: 0.6rem 1rem;
+  text-align: left;
+}
+
+.table-cuentas th {
+  background: var(--bg-secondary);
+  color: var(--text-contrast);
+}
+
+.btn-accion {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-accion:hover {
+  background: var(--primary-dark);
+}

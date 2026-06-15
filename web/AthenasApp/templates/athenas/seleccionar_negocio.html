@@ -1,0 +1,17 @@
+{% extends "athenas/base.html" %}
+{% block title %}Seleccionar negocio{% endblock %}
+{% block content %}
+<section class="tarjeta">
+  <h2>Seleccionar negocio</h2>
+  <form method="post">
+    {% csrf_token %}
+    <select name="negocio_id" required>
+      <option value="" selected>-- Elegí un negocio --</option>
+      {% for n in negocios %}
+        <option value="{{ n.id_negocio }}">{{ n.detalle }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Usar este</button>
+  </form>
+</section>
+{% endblock %}

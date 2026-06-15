@@ -1,0 +1,124 @@
+/* ==========================================================
+   MÓDULO DE CAJA – Sistema Despensa Athenas
+   Alineado con base.css, compras.css y ventas.css
+   ========================================================== */
+
+/* ----- Contenedor principal ----- */
+.panel {
+  background: var(--card);
+  border: 1px solid #243042;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+.panel h1, .panel h2, .panel h3 {
+  margin-top: 0;
+  color: var(--text);
+}
+
+/* ----- Grid de formularios (abrir/cerrar/estado) ----- */
+.grid-venta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .6rem 1rem;
+  background: #141a23;
+  border: 1px solid #243042;
+  border-radius: 12px;
+  padding: .8rem;
+  margin-bottom: 1rem;
+}
+.grid-venta label {
+  display: block;
+  margin-bottom: .35rem;
+  color: var(--muted);
+}
+.grid-venta input,
+.grid-venta select {
+  width: 100%;
+  background: #0f141c;
+  color: var(--text);
+  border: 1px solid #243042;
+  border-radius: 8px;
+  padding: .5rem .6rem;
+}
+.grid-venta input:focus,
+.grid-venta select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* ----- Tabla de movimientos (cerrar) ----- */
+.table-wrap {
+  overflow-x: auto;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.table th,
+.table td {
+  padding: .6rem .8rem;
+  border-bottom: 1px solid #243042;
+}
+.table thead th {
+  background: #141a23;
+  color: var(--primary);
+  font-weight: 600;
+  text-align: left;
+}
+.table tbody tr:hover { background: #18202a; }
+.r { text-align: right; }
+.ta-center { text-align: center; }
+
+/* ----- Totales (cerrar) ----- */
+.totales {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  font-weight: 600;
+  margin-top: .75rem;
+}
+.totales > div {
+  background: #141a23;
+  border: 1px solid #243042;
+  padding: .45rem .65rem;
+  border-radius: 8px;
+}
+
+/* ----- Acciones ----- */
+.acciones {
+  display: flex;
+  gap: .6rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* ----- Badges de estado y mensajes ----- */
+.badge {
+  display: inline-block;
+  background: #243042;
+  color: var(--text);
+  border-radius: 8px;
+  padding: .4rem .8rem;
+  font-weight: 600;
+  margin-bottom: .5rem;
+}
+.badge.ok { background: #164e63; color: #a7f3d0; }     /* abierto */
+.badge.error { background: #7f1d1d; color: #fecaca; }  /* cerrado o error */
+
+.mensajes { margin: .5rem 0; padding-left: 1rem; }
+.msg.error { color: #fca5a5; font-weight: 600; }
+
+/* ----- Responsive ----- */
+@media (max-width: 768px) {
+  .grid-venta { grid-template-columns: 1fr; }
+  .acciones { justify-content: stretch; flex-direction: column; }
+  .totales { flex-direction: column; align-items: flex-end; }
+}

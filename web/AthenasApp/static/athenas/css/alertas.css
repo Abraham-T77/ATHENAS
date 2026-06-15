@@ -1,0 +1,132 @@
+/* =========================================================
+   MÓDULO: ALERTAS (Stock, Vencimientos, Morosidad)
+   ========================================================= */
+
+/* --- Contenedor principal --- */
+section.panel {
+    padding: 2rem;
+}
+
+/* --- BOTONES DEL PANEL (Productos por vencer, Stock mínimo...) --- */
+.alertas-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.alertas-tabs a {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--primary);
+    border-radius: 6px;
+    color: var(--primary);
+    text-decoration: none;
+    transition: 0.25s ease;
+    font-weight: 600;
+}
+
+.alertas-tabs a:hover {
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
+}
+
+.alertas-tabs a.active {
+    background: var(--primary);
+    color: #000;
+}
+
+/* --- Tarjetas del panel principal --- */
+.alerta-card {
+    border-radius: 12px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+    padding: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 6px solid var(--primary);
+}
+
+.alerta-card h3 {
+    margin: 0 0 0.3rem 0;
+    font-size: 1.2rem;
+}
+
+.alerta-card p {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+/* --- Tablas de listados --- */
+.tabla {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.4rem;
+    margin-bottom: 2rem;
+}
+
+.tabla thead th {
+    padding: 0.8rem;
+    background: var(--bg-card);
+    color: var(--text-contrast);
+    font-weight: 600;
+}
+
+.tabla tbody tr td {
+    padding: 0.85rem;
+    background: var(--bg-card);
+    border-bottom: 1px solid #222;
+}
+
+.tabla tbody tr:hover td {
+    background: #1b1f24;
+}
+
+/* --- Estados de producto --- */
+.estado-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.estado-badge.ok {
+    background: #2ecc71;
+    color: #fff;
+}
+
+.estado-badge.alerta {
+    background: #f1c40f;
+    color: #000;
+}
+
+.estado-badge.off {
+    background: #e74c3c;
+    color: #fff;
+}
+
+/* --- Botón VOLVER --- */
+.acciones {
+    margin-top: 2rem;
+}
+
+.acciones a.btn {
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--primary);
+    border-radius: 8px;
+    color: var(--primary);
+    text-decoration: none;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.acciones a.btn:hover {
+    background: var(--primary);
+    color: #000;
+}
+
+/* --- Espaciado general para evitar que el botón choque con tablas --- */
+.acciones {
+    margin-top: 2.5rem !important;
+}

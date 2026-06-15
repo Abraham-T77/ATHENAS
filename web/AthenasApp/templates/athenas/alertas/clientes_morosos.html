@@ -1,0 +1,45 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Clientes Morosos{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/alertas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Clientes con Deudas Pendientes</h1>
+
+  <p class="intro">
+    Los siguientes clientes presentan saldo pendiente en sus cuentas corrientes.
+  </p>
+
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>DNI</th>
+        <th>Email</th>
+        <th>Saldo Pendiente</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in clientes %}
+      <tr class="vencido">
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.dni|default:"—" }}</td>
+        <td>{{ c.email|default:"—" }}</td>
+        <td>${{ c.saldo_cuenta_corriente }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">No hay clientes con deudas pendientes.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="acciones">
+    <a href="{% url 'alertas_panel' %}" class="btn">Volver</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'athenas/base.html' %}
+{% load static %}
+
+{% block title %}Editar Compra #{{ compra.id_compra }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/compras.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="wrap">
+  <header class="page-head">
+    <h1>Editar Compra #{{ compra.id_compra }}</h1>
+    <a class="btn btn-light" href="{% url 'compras_detalle' compra.id_compra %}">Volver</a>
+  </header>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <h3>Detalle</h3>
+    {{ formset.management_form }}
+    {% for f in formset %}
+      <div class="detalle-grid">{{ f.as_p }}</div>
+    {% endfor %}
+    <div class="actions-sticky">
+      <button type="submit" class="btn btn-primary">Guardar cambios</button>
+      <a href="{% url 'compras_confirmar' compra.id_compra %}" class="btn btn-success">Confirmar</a>
+      <a href="{% url 'compras_anular' compra.id_compra %}" class="btn btn-danger">Anular</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  // Convierte valores con punto o coma decimal y con/ sin separadores de miles
+  // Ejemplos válidos: "1550.75", "1.550,75", "1550,75", "1 550,75"
+  function toNumber(v){
+    if (v === null || v === undefined) return 0;
+    v = String(v).trim();
+    if (v === "") return 0;
+
+    // Quita cualquier símbolo que no sea dígito, punto, coma o signo
+    v = v.replace(/[^\d.,\-]/g, "");
+
+    var lastComma = v.lastIndexOf(",");
+    var lastDot   = v.lastIndexOf(".");
+
+    if (lastComma > -1 && lastDot > -1) {
+      // Si hay ambos, el separador decimal es el que aparece último
+      if (lastComma > lastDot) {
+        // decimal = coma -> quitamos puntos (miles) y cambiamos coma por punto
+        v = v.replace(/\./g, "").replace(",", ".");
+      } else {
+        // decimal = punto -> quitamos comas (miles)
+        v = v.replace(/,/g, "");
+      }
+    } else if (lastComma > -1) {
+      // Solo hay coma: la usamos como decimal
+      v = v.replace(",", ".");
+    } else {
+      // Solo hay punto o ninguno -> si hubiera comas sueltas, quitarlas
+      v = v.replace(/,/g, "");
+    }
+
+    var n = parseFloat(v);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function money(n){
+    return (Math.round(n*100)/100).toFixed(2);
+  }
+
+  function baseName(name){ // "form-0-cantidad" => "form-0"
+    return name.replace(/-(cantidad|costo_unitario|subtotal)$/, "");
+  }
+
+  function calcFor(prefix){
+    var qty  = document.querySelector('input[name="'+prefix+'-cantidad"]');
+    var cost = document.querySelector('input[name="'+prefix+'-costo_unitario"]');
+    var sub  = document.querySelector('input[name="'+prefix+'-subtotal"]');
+    if(!qty || !cost || !sub) return;
+
+    var q = toNumber(qty.value);
+    var c = toNumber(cost.value);
+
+    // Aseguramos que subtotal no rompa validación del navegador
+    sub.readOnly = true;
+    sub.required = false;
+
+    sub.value = (q > 0 && c > 0) ? money(q * c) : "";
+  }
+
+  function bind(){
+    // Bloquear edición manual y validación del subtotal
+    document.querySelectorAll('input[name$="-subtotal"]').forEach(function(i){
+      i.readOnly = true;
+      i.required = false;
+    });
+
+    // Recalcular en input y change (por si el navegador usa ruedas o cambia con teclado)
+    document.querySelectorAll('input[name$="-cantidad"], input[name$="-costo_unitario"]').forEach(function(inp){
+      var prefix = baseName(inp.name);
+      var handler = function(e){ calcFor(baseName(e.target.name)); };
+      inp.addEventListener('input', handler);
+      inp.addEventListener('change', handler);
+      // cálculo inicial
+      calcFor(prefix);
+    });
+  }
+
+  if (document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", bind);
+  } else {
+    bind();
+  }
+})();
+</script>
+{% endblock %}
+

@@ -1,0 +1,127 @@
+{% extends 'athenas/base.html' %}
+{% load static %}
+
+{% block title %}Compra #{{ obj.id_compra }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/compras.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="container">
+  <header class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Compra #{{ obj.id_compra }}</h1>
+    <div class="d-flex" style="gap:.5rem;">
+      <a class="btn btn-light" href="{% url 'compras_lista' %}">Volver</a>
+
+      {% if perms.AthenasApp.add_comprobantescompra %}
+        <a class="btn btn-outline-primary" href="{% url 'compras_adjuntar_comprobante' obj.id_compra %}">
+          Adjuntar Comprobante
+        </a>
+      {% endif %}
+
+      {% if perms.AthenasApp.change_compras %}
+        <a class="btn btn-light" href="{% url 'compras_editar' obj.id_compra %}">Editar</a>
+
+        {% if obj.estado == 'BORRADOR' %}
+          <form method="post" action="{% url 'compras_confirmar' obj.id_compra %}" style="display:inline;">
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit">Confirmar</button>
+          </form>
+        {% elif obj.estado == 'CONFIRMADA' %}
+          <form method="post" action="{% url 'compras_anular' obj.id_compra %}" style="display:inline;">
+            {% csrf_token %}
+            <button class="btn btn-outline-danger" type="submit">Anular</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </div>
+  </header>
+
+  <article class="tarjeta">
+    <div class="grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <p><b>Fecha:</b> {{ obj.fecha|date:"d/m/Y H:i" }}</p>
+        <p><b>Proveedor:</b> {{ obj.proveedor.razon_social|default:"—" }}</p>
+        <p><b>Nº comprobante:</b> {{ obj.numero_comprobante|default:"—" }}</p>
+      </div>
+      <div>
+        <p><b>Forma de pago:</b> {{ obj.get_forma_pago_display }}</p>
+        <p><b>Estado:</b>
+          {% if obj.estado == 'BORRADOR' %}
+            <span class="estado-badge">Borrador</span>
+          {% elif obj.estado == 'CONFIRMADA' %}
+            <span class="estado-badge ok">Confirmada</span>
+          {% else %}
+            <span class="estado-badge off">Anulada</span>
+          {% endif %}
+        </p>
+        <p><b>Total:</b> ${{ obj.total|floatformat:2 }}</p>
+      </div>
+    </div>
+    <p class="mb-2"><b>Observaciones:</b><br>{{ obj.observaciones|default:"—" }}</p>
+  </article>
+
+  <div class="table-wrap mt-4">
+    <h3 class="mb-2">Detalle</h3>
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th style="width:110px">Cantidad</th>
+          <th style="width:140px">Costo</th>
+          <th style="width:140px">Subtotal</th>
+          <th style="width:130px">Venc.</th>
+          <th style="width:140px">Lote</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in detalle %}
+        <tr>
+          <td>{{ d.producto.descripcion }}</td>
+          <td>{{ d.cantidad }}</td>
+          <td>${{ d.costo_unitario|floatformat:2 }}</td>
+          <td>${{ d.subtotal|floatformat:2 }}</td>
+          <td>{{ d.vencimiento|date:"d/m/Y"|default:"—" }}</td>
+          <td>{{ d.lote|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="ta-center">Sin ítems.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="table-wrap mt-4">
+  <h3 class="mb-2">Comprobantes</h3>
+  <table class="table table-sm align-middle">
+    <thead>
+      <tr>
+        <th style="width:160px;">Tipo</th>
+        <th style="width:180px;">Número</th>
+        <th style="width:160px;">Fecha</th>
+        <th>Archivo</th>
+        <th>Notas</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for comp in comprobantes %}
+      <tr>
+        <td>{{ comp.get_tipo_display|default:"—" }}</td>
+        <td>{{ comp.numero|default:"—" }}</td>
+        <td>{{ comp.cargado_en|date:"d/m/Y H:i"|default:"—" }}</td>
+        <td>
+          {% if comp.archivo %}
+            <a href="{{ comp.archivo.url }}" target="_blank" rel="noopener">Ver/Descargar</a>
+          {% else %}
+            — 
+          {% endif %}
+        </td>
+        <td>{{ comp.notas|default:"—" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="ta-center">Sin comprobantes.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</section>
+{% endblock %}

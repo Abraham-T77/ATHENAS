@@ -1,0 +1,42 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Bitácora del Sistema{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/bitacora.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Bitácora del Sistema</h1>
+
+  <p class="intro">
+    En este módulo se registran eventos generales del sistema.
+  </p>
+
+  <div class="acciones">
+    <a href="{% url 'bitacora_lista' %}" class="btn-primary">Ver Registros</a>
+    <a href="{% url 'bitacora_exportar_pdf' %}" class="btn-sm">PDF</a>
+    <a href="{% url 'bitacora_exportar_excel' %}" class="btn-sm">Excel</a>
+  </div>
+
+  <div class="resumen">
+    <article class="bitacora-card">
+      <h3>Total de Registros</h3>
+      <p>{{ total_registros }}</p>
+    </article>
+
+    <article class="bitacora-card">
+      <h3>Último Evento</h3>
+
+      {% if ultimo_evento %}
+      <p>{{ ultimo_evento.fecha|date:"d/m/Y H:i" }}</p>
+      <p>{{ ultimo_evento.accion }} por {{ ultimo_evento.usuario.usuario }}</p>
+      {% else %}
+      <p>—</p>
+      {% endif %}
+    </article>
+  </div>
+</section>
+{% endblock %}

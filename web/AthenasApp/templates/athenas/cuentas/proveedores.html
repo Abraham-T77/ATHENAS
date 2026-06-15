@@ -1,0 +1,52 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Cuentas Corrientes de Proveedores{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/cuentas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Cuentas Corrientes de Proveedores</h1>
+
+  <form method="get" class="filtros">
+    <input type="text" name="buscar" placeholder="Buscar proveedor..." value="{{ request.GET.buscar }}">
+    <button type="submit" class="btn">Buscar</button>
+  </form>
+
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Proveedor</th>
+        <th>CUIT</th>
+        <th>Email</th>
+        <th class="r">Total Compras</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+        {% with p=row.proveedor %}
+        <tr>
+          <td>{{ p.razon_social }}</td>
+          <td>{{ p.cuit|default:"—" }}</td>
+          <td>{{ p.email|default:"—" }}</td>
+          <td class="r">${{ row.total_compras }}</td>
+          <td>
+            <a href="{% url 'cuentas_proveedores_detalle' p.id_proveedor %}" class="btn-sm">Detalle</a>
+          </td>
+        </tr>
+        {% endwith %}
+      {% empty %}
+      <tr><td colspan="5">No se encontraron proveedores con movimientos.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="acciones">
+    <a href="{% url 'cuentas_panel' %}" class="btn">Volver</a>
+  </div>
+</section>
+{% endblock %}

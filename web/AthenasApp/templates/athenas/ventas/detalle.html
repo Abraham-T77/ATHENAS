@@ -1,0 +1,57 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+{% block title %}Venta {{ venta.numero_ticket }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/ventas.css' %}">
+{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Venta {{ venta.numero_ticket }}</h1>
+
+  <div class="datos">
+    <div><strong>Fecha:</strong> {{ venta.fecha|date:"d/m/Y H:i" }}</div>
+    <div><strong>Forma de pago:</strong> {{ venta.forma_pago }}</div>
+    <div><strong>Estado:</strong> {{ venta.estado }}</div>
+    <div><strong>Total:</strong> ${{ venta.total_neto }}</div>
+  </div>
+
+  <table class="tabla">
+    <thead><tr><th>Producto</th><th>Cant</th><th>PU</th><th>Desc%</th><th>Subtotal</th></tr></thead>
+    <tbody>
+    {% for d in detalles %}
+      <tr>
+        <td>{{ d.nombre_producto }}</td>
+        <td class="r">{{ d.cantidad }}</td>
+        <td class="r">{{ d.precio_unitario }}</td>
+        <td class="r">{% if d.descuento_item_pct %}{{ d.descuento_item_pct }}{% endif %}</td>
+        <td class="r">{{ d.subtotal }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {% if pagos %}
+  <h3>Pagos</h3>
+  <ul>
+    {% for p in pagos %}
+      <li>{{ p.metodo }}: ${{ p.monto }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if caja_usuario %}
+  <h3>Caja asociada</h3>
+  <p>
+    <strong>Caja ID:</strong> {{ caja_usuario.caja.id_caja }}<br>
+    <strong>Estado:</strong> {{ caja_usuario.estado }}<br>
+    <strong>Saldo final:</strong> ${{ caja_usuario.saldo_final }}
+  </p>
+  {% endif %}
+
+
+  <div class="acciones">
+    <a class="btn" href="{% url 'ventas_lista' %}">Volver</a>
+    <a class="btn-primary" href="{% url 'venta_ticket' venta.id_venta %}" target="_blank">Ticket</a>
+  </div>
+</section>
+{% endblock %}

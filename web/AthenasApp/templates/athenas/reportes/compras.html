@@ -1,0 +1,65 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Reporte de Compras{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/reportes.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>Reporte de Compras</h1>
+
+    {% if grafico %}
+    <div class="chart-container">
+        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico" class="chart">
+    </div>
+    {% endif %}
+
+    <form method="get" class="filtros">
+        <label>Desde:</label>
+        <input type="date" name="desde" value="{{ request.GET.desde }}">
+
+        <label>Hasta:</label>
+        <input type="date" name="hasta" value="{{ request.GET.hasta }}">
+
+        <button type="submit" class="btn">Filtrar</button>
+    </form>
+
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Proveedor</th>
+                <th>Forma de Pago</th>
+                <th>Total</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in compras %}
+            <tr>
+                <td>{{ c.fecha|date:"d/m/Y" }}</td>
+                <td>{{ c.proveedor.razon_social|default:"—" }}</td>
+                <td>{{ c.forma_pago }}</td>
+                <td>${{ c.total }}</td>
+                <td>{{ c.estado }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No se encontraron compras en el período seleccionado.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="acciones">
+        <a href="{% url 'reportes_panel' %}" class="btn">Volver</a>
+
+        <a href="{% url 'exportar_reporte_compras_pdf' %}?{{ request.GET.urlencode }}"
+           class="btn-sm btn-secondary">Exportar PDF</a>
+
+        <a href="{% url 'exportar_reporte_compras_excel' %}?{{ request.GET.urlencode }}"
+           class="btn-sm btn-secondary">Exportar Excel</a>
+    </div>
+</section>
+{% endblock %}

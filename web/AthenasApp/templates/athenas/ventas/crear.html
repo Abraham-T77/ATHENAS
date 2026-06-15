@@ -1,0 +1,276 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+{% block title %}Nueva Venta{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/ventas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Nueva Venta</h1>
+
+  <div class="mensaje">
+    {% for message in messages %}
+      <p class="{{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+  </div>
+
+  <form method="post" id="form-venta" class="form-venta">
+    {% csrf_token %}
+
+    <!-- CABECERA: cliente + forma de pago + mixto + desc global -->
+    <div class="grid-venta">
+      <div>
+        <label>Cliente:</label>
+        <select name="cliente_id">
+          {# Siempre ofrecemos Consumidor Final como default #}
+          <option value="">Consumidor Final</option>
+          {% for c in clientes %}
+            <option value="{{ c.id_cliente }}">{{ c.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label>Forma de pago:</label>
+        <select name="forma_pago" id="forma_pago">
+          {% for fp in formas_pago %}
+            <option value="{{ fp }}">{{ fp }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div id="pagos_mixtos" class="fila-pagos" style="display:none;">
+        <label>
+          Efectivo:
+          <input type="text" name="pago_efectivo" value="">
+        </label>
+        <label>
+          Tarjeta:
+          <input type="text" name="pago_tarjeta" value="">
+        </label>
+        <label>
+          Transferencia:
+          <input type="text" name="pago_transferencia" value="">
+        </label>
+      </div>
+
+      <div>
+        <label>Desc. global (%):</label>
+        <input type="text" name="descuento_global_pct" id="descuento_global_pct" value="">
+      </div>
+    </div>
+
+    <!-- CUERPO: selector de productos + carrito -->
+    <div class="fila-carrito">
+
+      <!-- LECTOR DE CÓDIGO DE BARRAS -->
+      <div class="barcode-box">
+          <label for="barcode_input">Código de barras:</label>
+          <input type="text" id="barcode_input" placeholder="Escaneá un producto..." autocomplete="off">
+      </div>
+
+
+      <!-- Fila de alta de ítems (corregida) -->
+      <div class="add-linea">
+        <label>
+          Producto:
+          <select id="prod_selector">
+            <option value="">-- Seleccionar --</option>
+            {% for p in productos %}
+              <option value="{{ p.id_producto }}"
+                      data-precio="{{ p.precio_venta }}"
+                      data-codigo="{{ p.codigo_barra }}">
+                  {{ p.descripcion }}
+              </option>
+            {% endfor %}
+
+          </select>
+        </label>
+
+        <label>
+          Cant:
+          <input type="number" id="prod_cant" min="1" value="1">
+        </label>
+
+        <label>
+          Precio:
+          <input type="text" id="prod_precio">
+        </label>
+
+        <label>
+          Desc. ítem (%):
+          <input type="text" id="prod_desc" placeholder="opcional">
+        </label>
+
+        <button type="button" id="btn_add" class="btn btn-agregar">Agregar</button>
+      </div>
+
+      <table class="tabla" id="tabla_items">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cant</th>
+            <th>PU</th>
+            <th>Desc %</th>
+            <th>Subtotal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="totales">
+        <div>Bruto: $<span id="t_bruto">0.00</span></div>
+        <div>Neto: $<span id="t_neto">0.00</span></div>
+      </div>
+
+      <div class="acciones">
+        <a class="btn" href="{% url 'ventas_lista' %}">Volver</a>
+        <button class="btn-primary" type="submit">Confirmar venta</button>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  const fp       = document.getElementById('forma_pago');
+  const mixtos   = document.getElementById('pagos_mixtos');
+  const tabla    = document.getElementById('tabla_items').querySelector('tbody');
+  const sel      = document.getElementById('prod_selector');
+  const icant    = document.getElementById('prod_cant');
+  const iprec    = document.getElementById('prod_precio');
+  const idesc    = document.getElementById('prod_desc');
+  const tBruto   = document.getElementById('t_bruto');
+  const tNeto    = document.getElementById('t_neto');
+  const dGlobal  = document.getElementById('descuento_global_pct');
+
+  const fmt = n => (Math.round(n * 100) / 100).toFixed(2);
+
+  // setear precio al seleccionar producto
+  sel.addEventListener('change', () => {
+    const op = sel.options[sel.selectedIndex];
+    iprec.value = op ? (op.dataset.precio || '') : '';
+  });
+
+  function toggleMixto() {
+    if (!mixtos) return;
+    mixtos.style.display = (fp.value === 'Mixto') ? 'grid' : 'none';
+  }
+
+  fp.addEventListener('change', toggleMixto);
+  // estado inicial
+  toggleMixto();
+
+  // agregar ítem
+  document.getElementById('btn_add').addEventListener('click', () => {
+    const pid   = sel.value;
+    const ptext = sel.options[sel.selectedIndex]?.text || '';
+    const cant  = parseInt(icant.value || '0', 10);
+    const pu    = parseFloat((iprec.value || '0').replace(',', '.'));
+    const di    = idesc.value ? parseFloat(idesc.value.replace(',', '.')) : null;
+
+    if (!pid || cant <= 0 || isNaN(pu)) {
+      alert('Datos inválidos del ítem.');
+      return;
+    }
+
+    const precioAplicado = (di !== null && di >= 0 && di <= 100) ? (pu * (1 - di/100)) : pu;
+    const subtotal       = cant * precioAplicado;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${ptext}</td>
+      <td class="r">${cant}</td>
+      <td class="r">${fmt(pu)}</td>
+      <td class="r">${di !== null ? fmt(di) : ''}</td>
+      <td class="r sub">${fmt(subtotal)}</td>
+      <td>
+        <button type="button" class="rm">×</button>
+        <input type="hidden" name="producto_id[]" value="${pid}">
+        <input type="hidden" name="cantidad[]" value="${cant}">
+        <input type="hidden" name="precio_unitario[]" value="${fmt(pu)}">
+        <input type="hidden" name="desc_item_pct[]" value="${di !== null ? fmt(di) : ''}">
+      </td>
+    `;
+    tabla.appendChild(tr);
+
+    recalcular();
+
+    // limpiar inputs rápidos
+    sel.value = '';
+    icant.value = 1;
+    iprec.value = '';
+    idesc.value = '';
+  });
+
+  // eliminar línea
+  tabla.addEventListener('click', (ev) => {
+    if (ev.target.classList.contains('rm')) {
+      ev.target.closest('tr').remove();
+      recalcular();
+    }
+  });
+
+  dGlobal.addEventListener('input', recalcular);
+
+  function recalcular(){
+    let bruto = 0;
+    tabla.querySelectorAll('tr .sub').forEach(td => {
+      bruto += parseFloat((td.textContent || '0').replace(',', '.')) || 0;
+    });
+    tBruto.textContent = fmt(bruto);
+
+    let neto = bruto;
+    const d = parseFloat((dGlobal.value || '').replace(',', '.'));
+    if (!isNaN(d) && d >= 0 && d <= 100) {
+      neto = bruto * (1 - d/100);
+    }
+    tNeto.textContent = fmt(neto);
+  }
+})();
+
+// === LECTOR DE CÓDIGO DE BARRAS ===
+// Busca el producto por código y lo agrega directo al carrito
+
+const barcodeInput = document.getElementById('barcode_input');
+const sel = document.getElementById('prod_selector');
+const icant = document.getElementById('prod_cant');
+const iprec = document.getElementById('prod_precio');
+
+barcodeInput.addEventListener('keypress', function(ev) {
+    if (ev.key === 'Enter') {
+        ev.preventDefault();
+
+        const code = barcodeInput.value.trim();
+        if (!code) return;
+
+        // Buscar producto con ese código dentro del <select>
+        const op = [...sel.options].find(o => o.dataset.codigo === code);
+
+        if (!op) {
+            alert("No existe un producto con ese código de barras.");
+            barcodeInput.value = "";
+            return;
+        }
+
+        // Seleccionar el producto encontrado
+        sel.value = op.value;
+        iprec.value = op.dataset.precio || "";
+        icant.value = 1;
+
+        // Agregar al carrito
+        document.getElementById('btn_add').click();
+
+        // Limpiar lector
+        barcodeInput.value = "";
+    }
+});
+
+
+
+</script>
+{% endblock %}

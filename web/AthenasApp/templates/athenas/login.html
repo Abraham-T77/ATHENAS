@@ -1,0 +1,12 @@
+{% extends "athenas/base.html" %}
+{% block title %}Ingresar{% endblock %}
+{% block content %}
+<section class="tarjeta">
+  <h1>Ingreso al sistema</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Acceder</button>
+  </form>
+</section>
+{% endblock %}

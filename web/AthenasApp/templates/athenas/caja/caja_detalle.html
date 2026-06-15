@@ -1,0 +1,83 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Detalle de caja{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <h1>Detalle de caja</h1>
+
+    <div class="grid-venta" style="margin-top:1rem;">
+        <div>
+            <label>ID Caja</label>
+            <input class="form-control" value="{{ caja.id_caja|default:caja.pk }}" readonly>
+        </div>
+
+        <div>
+            <label>Fecha apertura</label>
+            <input class="form-control" value="{{ caja.fecha_apertura|date:'d/m/Y H:i' }}" readonly>
+        </div>
+
+        <div>
+            <label>Fecha cierre</label>
+            <input class="form-control"
+                   value="{% if caja.fecha_cierre %}{{ caja.fecha_cierre|date:'d/m/Y H:i' }}{% else %}—{% endif %}"
+                   readonly>
+        </div>
+
+        <div>
+            <label>Estado</label>
+            <input class="form-control" value="{{ caja.estado }}" readonly>
+        </div>
+
+        <div>
+            <label>Saldo inicial</label>
+            <input class="form-control" value="${{ caja.saldo_inicial|floatformat:2 }}" readonly>
+        </div>
+
+        <div>
+            <label>Saldo final</label>
+            <input class="form-control" value="${{ caja.saldo_final|floatformat:2 }}" readonly>
+        </div>
+    </div>
+
+    <h2 style="margin-top:2rem;">Movimientos</h2>
+
+    <div class="table-wrap">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Concepto</th>
+                    <th class="text-end">Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mov in movimientos %}
+                    <tr>
+                        <td>{{ mov.fecha|date:"d/m/Y H:i" }}</td>
+                        <td>{{ mov.tipo }}</td>
+                        <td>{{ mov.concepto }}</td>
+                        <td class="text-end">${{ mov.monto|floatformat:2 }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td class="text-center" colspan="4">No hay movimientos registrados.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-top:1.5rem;">
+        <a href="{% url 'caja_lista' %}" class="btn">Volver</a>
+
+        {% if caja.estado == "ABIERTA" %}
+            <a href="{% url 'caja_cierre' caja.pk %}" class="btn btn-primary">
+                Cerrar caja
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

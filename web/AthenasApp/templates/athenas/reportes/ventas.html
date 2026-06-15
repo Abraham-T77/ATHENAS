@@ -1,0 +1,67 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Reporte de Ventas{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/reportes.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>Reporte de Ventas</h1>
+
+    {% if grafico %}
+    <div class="chart-container">
+        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico" class="chart">
+    </div>
+    {% endif %}
+
+    <form method="get" class="filtros">
+        <label>Desde:</label>
+        <input type="date" name="desde" value="{{ request.GET.desde }}">
+
+        <label>Hasta:</label>
+        <input type="date" name="hasta" value="{{ request.GET.hasta }}">
+
+        <button type="submit" class="btn">Filtrar</button>
+    </form>
+
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Número</th>
+                <th>Cliente</th>
+                <th>Forma de Pago</th>
+                <th>Total</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in ventas %}
+            <tr>
+                <td>{{ v.fecha|date:"d/m/Y" }}</td>
+                <td>{{ v.numero_ticket }}</td>
+                <td>{{ v.cliente.nombre|default:"—" }}</td>
+                <td>{{ v.forma_pago }}</td>
+                <td>${{ v.total_neto }}</td>
+                <td>{{ v.estado }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No se encontraron ventas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="acciones">
+        <a href="{% url 'reportes_panel' %}" class="btn">Volver</a>
+
+        <a href="{% url 'exportar_reporte_ventas_pdf' %}?{{ request.GET.urlencode }}"
+           class="btn-sm btn-secondary">Exportar PDF</a>
+
+        <a href="{% url 'exportar_reporte_ventas_excel' %}?{{ request.GET.urlencode }}"
+           class="btn-sm btn-secondary">Exportar Excel</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Cuenta Corriente – {{ proveedor.razon_social }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/cuentas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Cuenta Corriente del Proveedor</h1>
+
+  <div class="datos">
+    <p><strong>Razón Social:</strong> {{ proveedor.razon_social }}</p>
+    <p><strong>CUIT:</strong> {{ proveedor.cuit|default:"—" }}</p>
+    <p><strong>Email:</strong> {{ proveedor.email|default:"—" }}</p>
+  </div>
+
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Comprobante</th>
+        <th>Estado</th>
+        <th class="r">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in compras %}
+      <tr>
+        <td>{{ c.fecha|date:"d/m/Y" }}</td>
+        <td>{{ c.numero_comprobante|default:"—" }}</td>
+        <td>{{ c.estado }}</td>
+        <td class="r">${{ c.total }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">Sin compras registradas.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p style="margin-top:.5rem;"><strong>Total de compras:</strong> ${{ total_compras }}</p>
+
+  <div class="acciones">
+    <a href="{% url 'cuentas_proveedores' %}" class="btn">Volver</a>
+  </div>
+</section>
+{% endblock %}

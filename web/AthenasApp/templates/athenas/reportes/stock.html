@@ -1,0 +1,62 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Reporte de Stock{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/reportes.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>Reporte de Stock</h1>
+
+    {% if grafico %}
+    <div class="chart-container">
+        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico" class="chart">
+    </div>
+    {% endif %}
+
+    <form method="get" class="filtros">
+        <input type="text" name="buscar" placeholder="Buscar producto..." value="{{ request.GET.buscar }}">
+        <button type="submit" class="btn">Buscar</button>
+    </form>
+
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Stock Actual</th>
+                <th>Stock Mínimo</th>
+                <th>Precio Venta</th>
+                <th>Valor Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in productos %}
+            <tr class="{% if p.stock_actual <= p.stock_minimo %}critico{% endif %}">
+                <td>{{ p.descripcion }}</td>
+                <td>{{ p.categoria.nombre|default:"—" }}</td>
+                <td class="r">{{ p.stock_actual }}</td>
+                <td class="r">{{ p.stock_minimo }}</td>
+                <td class="r">${{ p.precio_venta }}</td>
+                <td class="r">${{ p.valor_total|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No se encontraron productos en inventario.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="acciones">
+        <a href="{% url 'reportes_panel' %}" class="btn">Volver</a>
+
+        <a href="{% url 'exportar_reporte_stock_pdf' %}?{{ request.GET.urlencode }}"
+           class="btn-sm btn-secondary">Exportar PDF</a>
+
+        <a href="{% url 'exportar_reporte_stock_excel' %}?{{ request.GET.urlencode }}"
+           class="btn-sm btn-secondary">Exportar Excel</a>
+    </div>
+</section>
+{% endblock %}

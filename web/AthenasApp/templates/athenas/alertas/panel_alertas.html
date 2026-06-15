@@ -1,0 +1,67 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Panel de Alertas del Sistema{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/alertas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    
+    <h1>Panel de Alertas</h1>
+
+    <p class="intro">
+        Este módulo muestra todas las alertas activas del sistema: productos vencidos,
+        próximos a vencer, stock bajo, clientes morosos y eventos del sistema.
+    </p>
+
+    <!-- 🔹 BOTONES / TABS DE NAVEGACIÓN -->
+    <div class="alertas-tabs">
+        <a href="{% url 'alertas_productos_vencimiento' %}"
+          class="{% if section == 'vencimiento' %}active{% endif %}">Productos por Vencer</a>
+
+        <a href="{% url 'alertas_stock_minimo' %}"
+          class="{% if section == 'stock' %}active{% endif %}">Stock Mínimo</a>
+
+        <a href="{% url 'alertas_clientes_morosos' %}"
+          class="{% if section == 'clientes' %}active{% endif %}">Clientes Morosos</a>
+
+        <a href="{% url 'alertas_generales' %}"
+          class="{% if section == 'generales' %}active{% endif %}">Alertas Generales</a>
+    </div>
+
+
+    <!-- 🔹 RESUMEN DE ESTADÍSTICAS -->
+    <div class="resumen">
+
+        <article>
+            <h3>Productos vencidos</h3>
+            <p>{{ productos_vencidos|length }} productos vencidos</p>
+        </article>
+
+        <article>
+            <h3>Por vencer (15 días)</h3>
+            <p>{{ productos_vencimiento|length }} próximos a vencer</p>
+        </article>
+
+        <article>
+            <h3>Stock mínimo</h3>
+            <p>{{ productos_stock_bajo|length }} con stock crítico</p>
+        </article>
+
+        <article>
+            <h3>Clientes morosos</h3>
+            <p>{{ clientes_deudores|length }} clientes con deuda</p>
+        </article>
+
+        <article>
+            <h3>Eventos del sistema</h3>
+            <p>{{ eventos_sistema|length }} alertas registradas</p>
+        </article>
+
+    </div>
+
+</section>
+{% endblock %}

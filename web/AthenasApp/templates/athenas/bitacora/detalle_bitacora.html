@@ -1,0 +1,28 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Detalle de Registro{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/bitacora.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Detalle del Registro</h1>
+
+  <div class="detalle">
+    <p><strong>ID:</strong> {{ log.id_bitacora }}</p>
+    <p><strong>Fecha:</strong> {{ log.fecha|date:"d/m/Y H:i" }}</p>
+    <p><strong>Usuario:</strong> {{ log.usuario.usuario|default:"—" }}</p>
+    <p><strong>Acción:</strong> {{ log.accion }}</p>
+    <p><strong>Detalle:</strong> {{ log.detalle|default:"—" }}</p>
+    <p><strong>Resultado:</strong> {{ log.exito|yesno:"Éxito,Error" }}</p>
+  </div>
+
+  <div class="acciones">
+    <a href="{% url 'bitacora_lista' %}" class="btn">Volver</a>
+  </div>
+
+</section>
+{% endblock %}

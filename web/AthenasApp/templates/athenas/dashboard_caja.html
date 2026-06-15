@@ -1,0 +1,11 @@
+{% extends "athenas/base.html" %}
+{% block title %}Panel - Caja{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Panel Caja</h1>
+  <div class="grid-cards">
+    <a class="card" href="{% url 'venta_nueva' %}">Nueva Venta</a>
+    <a class="card" href="{% url 'productos_lista' %}">Productos (ver)</a>
+  </div>
+</section>
+{% endblock %}

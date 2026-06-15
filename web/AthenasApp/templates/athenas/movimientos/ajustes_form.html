@@ -1,0 +1,55 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+{% block title %}Nuevo ajuste de stock{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/movimientos.css' %}">
+{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Nuevo ajuste de stock</h1>
+
+  {% if errores %}
+    <ul class="mensajes">
+      {% for e in errores %}<li class="msg error">{{ e }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post" class="grid-venta" style="margin-top:.75rem;">
+    {% csrf_token %}
+
+    <div>
+      <label for="producto_id">Producto</label>
+      <select id="producto_id" name="producto_id" class="form-select" required>
+          <option value="">-- Seleccioná --</option>
+          {% for p in productos %}
+              <option value="{{ p.pk }}"
+                  {% if p.pk|stringformat:"s" == request.POST.producto_id %}selected{% endif %}>
+                  {{ p.descripcion }} (Stock: {{ p.stock_actual }})
+              </option>
+          {% endfor %}
+      </select>
+
+
+    </div>
+
+    <div>
+      <label for="tipo">Tipo</label>
+      <select id="tipo" name="tipo" class="form-select" required>
+        <option value="ENTRADA" {% if request.POST.tipo == "ENTRADA" %}selected{% endif %}>Entrada (+)</option>
+        <option value="SALIDA"  {% if request.POST.tipo == "SALIDA" %}selected{% endif %}>Salida (−)</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="cantidad">Cantidad</label>
+      <input id="cantidad" name="cantidad" type="number" min="1" step="1" class="form-control"
+             value="{{ request.POST.cantidad|default:'' }}" required>
+    </div>
+
+    <div style="grid-column:1/-1;text-align:right;margin-top:.5rem;">
+      <button type="submit" class="btn btn-primary">Guardar ajuste</button>
+      <a class="btn btn-light" href="{% url 'movimientos_lista' %}">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

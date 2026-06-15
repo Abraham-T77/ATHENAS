@@ -1,0 +1,14 @@
+{% extends "athenas/base.html" %}
+{% block title %}Editar usuario{% endblock %}
+{% block content %}
+
+<section class="tarjeta">
+  <h1>Editar usuario</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar cambios</button>
+  </form>
+</section>
+
+{% endblock %}

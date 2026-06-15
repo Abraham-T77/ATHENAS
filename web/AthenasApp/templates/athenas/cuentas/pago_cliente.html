@@ -1,0 +1,30 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Registrar Pago de Cliente{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/cuentas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Registrar Pago – {{ cliente.nombre }}</h1>
+
+  <form method="post" class="grid-venta" style="margin-top:.75rem;">
+    {% csrf_token %}
+    <div>
+      <label>Monto</label>
+      <input type="number" name="monto" step="0.01" min="0.01" class="form-control" required>
+    </div>
+    <div>
+      <label>Descripción (opcional)</label>
+      <input type="text" name="descripcion" class="form-control">
+    </div>
+
+    <div style="grid-column:1/-1;text-align:right;margin-top:.5rem;">
+      <button type="submit" class="btn btn-primary">Registrar Pago</button>
+      <a href="{% url 'cuentas_clientes_detalle' cliente.id_cliente %}" class="btn btn-light">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

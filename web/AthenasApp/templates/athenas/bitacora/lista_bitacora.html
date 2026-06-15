@@ -1,0 +1,62 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Registros de Bitácora{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/bitacora.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Registros de Bitácora</h1>
+
+  <form method="get" class="filtros">
+    <label>Usuario:</label>
+    <input type="text" name="usuario"
+           placeholder="Buscar usuario..."
+           value="{{ request.GET.usuario }}">
+
+    <label>Desde:</label>
+    <input type="date" name="desde" value="{{ request.GET.desde }}">
+
+    <label>Hasta:</label>
+    <input type="date" name="hasta" value="{{ request.GET.hasta }}">
+
+    <button type="submit" class="btn">Filtrar</button>
+  </form>
+
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Usuario</th>
+        <th>Acción</th>
+        <th>Detalle</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for log in registros %}
+      <tr>
+        <td>{{ log.fecha|date:"d/m/Y H:i" }}</td>
+        <td>{{ log.usuario.usuario|default:"—" }}</td>
+        <td>{{ log.accion }}</td>
+        <td>{{ log.detalle|default:"—" }}</td>
+        <td>
+          <a href="{% url 'bitacora_detalle' log.id_bitacora %}" class="btn-sm">Ver</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">No se encontraron registros.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="acciones">
+    <a href="{% url 'bitacora_panel' %}" class="btn">Volver</a>
+  </div>
+
+</section>
+{% endblock %}

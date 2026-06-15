@@ -1,0 +1,71 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Productos Vencidos o Próximos a Vencer{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/alertas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>Productos Vencidos o Próximos a Vencer</h1>
+
+    <h2>Productos Vencidos</h2>
+
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Fecha de Vencimiento</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in vencidos %}
+            <tr class="vencido">
+                <td>{{ p.descripcion }}</td>
+                <td>{{ p.categoria.nombre|default:"—" }}</td>
+                <td>{{ p.fecha_vencimiento|date:"d/m/Y" }}</td>
+                <td><span class="estado-badge off">Vencido</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No hay productos vencidos.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 style="margin-top:2rem;">Próximos a Vencer (15 días)</h2>
+
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Fecha de Vencimiento</th>
+                <th>Días Restantes</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in proximos %}
+            <tr class="proximo">
+                <td>{{ p.descripcion }}</td>
+                <td>{{ p.categoria.nombre|default:"—" }}</td>
+                <td>{{ p.fecha_vencimiento|date:"d/m/Y" }}</td>
+                <td>{{ p.dias_restantes }}</td>
+                <td><span class="estado-badge alerta">Próximo</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No hay productos próximos a vencer.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="acciones">
+        <a href="{% url 'alertas_panel' %}" class="btn">Volver</a>
+    </div>
+
+</section>
+{% endblock %}

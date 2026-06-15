@@ -1,0 +1,28 @@
+{% extends "athenas/base.html" %}
+{% block title %}Nueva marca{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h2 class="mb-4">Nueva marca</h2>
+
+  <form method="post" novalidate class="space-y-4" style="max-width: 980px;">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="form-group" style="margin-bottom:1rem;">
+      <label for="{{ form.nombre.id_for_label }}" class="font-semibold">Nombre</label>
+      {{ form.nombre }}
+      {% if form.nombre.errors %}
+        <div class="text-red-600 text-sm mt-1">{{ form.nombre.errors|join:", " }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-actions" style="display:flex; gap:.75rem; margin-top:1rem;">
+      <button type="submit" class="btn btn-success">Guardar</button>
+      <a href="{% url 'productos_crear' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

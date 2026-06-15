@@ -1,0 +1,297 @@
+/* ==========================================================
+   MÓDULO DE VENTAS – Sistema Despensa Athenas
+   Alineado con base.css y compras.css
+   ========================================================== */
+
+/* ----- Contenedor y títulos ----- */
+.panel {
+  background: var(--card);
+  border: 1px solid #243042;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+
+.panel h1, .panel h2, .panel h3 {
+  margin-top: 0;
+  color: var(--text);
+}
+
+/* ----- Barra de acciones / filtros (similar a compras) ----- */
+.filter-bar, .acciones {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+
+.filter-bar {
+  margin-bottom: 1rem;
+}
+
+.filter-bar input,
+.filter-bar select {
+  background: #0f141c;
+  border: 1px solid #243042;
+  border-radius: 8px;
+  padding: .45rem .6rem;
+  color: var(--text);
+  min-width: 160px;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* ----- Grid superior (cliente, forma de pago, descuento global) ----- */
+.grid-venta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .6rem 1rem;
+  background: #141a23;
+  border: 1px solid #243042;
+  border-radius: 12px;
+  padding: .8rem;
+  margin-bottom: 1rem;
+}
+.grid-venta label {
+  display: block;
+  margin-bottom: .35rem;
+  color: var(--muted);
+}
+.grid-venta input,
+.grid-venta select {
+  width: 100%;
+  background: #0f141c;
+  color: var(--text);
+  border: 1px solid #243042;
+  border-radius: 8px;
+  padding: .5rem .6rem;
+}
+.grid-venta input:focus,
+.grid-venta select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+
+/* === Layout final para forma de pago Mixto === */
+#pagos_mixtos {
+  display: none; /* el JS lo activa */
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: .8rem;
+  padding-top: .3rem;
+}
+
+#pagos_mixtos label {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  font-size: .95rem;
+  color: var(--muted);
+}
+
+#pagos_mixtos input {
+  background: #0f141c;
+  border: 1px solid #243042;
+  border-radius: 8px;
+  padding: .5rem .6rem;
+  color: var(--text);
+}
+
+@media (max-width: 600px) {
+  #pagos_mixtos {grid-template-columns: 1fr;}
+}
+
+
+
+/* ----- Carrito ----- */
+.carrito {
+  background: var(--card);
+  border: 1px solid #243042;
+  border-radius: 12px;
+  padding: .8rem;
+}
+
+/* ----- Línea de agregado de ítems ----- */
+.add-linea {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 100px 120px 140px 120px auto;
+  gap: .6rem;
+  align-items: end;
+  margin-bottom: .6rem;
+}
+.add-linea label {
+  display: grid;
+  gap: .35rem;
+  color: var(--muted);
+}
+.add-linea select,
+.add-linea input {
+  background: #0f141c;
+  border: 1px solid #243042;
+  border-radius: 8px;
+  padding: .45rem .6rem;
+  color: var(--text);
+  min-width: 0;
+}
+.add-linea #prod_selector { min-width: 260px; }
+.add-linea #btn_add,
+.btn-agregar {
+  border:1px solid #243042;
+  background:#18202a;
+  color:var(--text);
+  padding:.45rem .8rem;
+  border-radius:8px;
+  font-weight:600;
+  justify-self: start;
+}
+.add-linea #btn_add:hover { background:#1f2937; }
+@media (max-width: 900px) {
+  .add-linea {
+    grid-template-columns: 1fr 110px 1fr;
+  }
+}
+
+
+/* ----- Tabla (reutiliza estética base/compras) ----- */
+.tabla, .table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tabla th, .tabla td,
+.table th, .table td {
+  padding: .6rem .8rem;
+  border-bottom: 1px solid #243042;
+}
+
+.tabla thead th,
+.table thead th {
+  background: #141a23;
+  color: var(--primary);
+  font-weight: 600;
+  text-align: left;
+}
+
+.tabla tbody tr:hover,
+.table tbody tr:hover {
+  background: #18202a;
+}
+
+.r { text-align: right; }
+
+/* ----- Campos ocultos del carrito (no necesitan estilo, solo por robustez) ----- */
+#hidden_fields { display: block; height: 0; overflow: hidden; }
+
+/* ----- Totales ----- */
+.totales {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  font-weight: 600;
+  margin-top: .75rem;
+}
+
+.totales > div {
+  background: #141a23;
+  border: 1px solid #243042;
+  padding: .45rem .65rem;
+  border-radius: 8px;
+}
+
+/* ----- Acciones finales ----- */
+.acciones {
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn, .btn-primary, .btn-light { /* Los estilos base ya existen en base.css */
+  font-weight: 600;
+}
+
+/* ----- Ticket (impresión) ----- */
+.ticket {
+  max-width: 360px;
+  margin: 0 auto;
+  background: var(--card);
+  border: 1px solid #243042;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.ticket h2 { margin: 0 0 .5rem 0; }
+
+.ticket table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ticket th, .ticket td {
+  padding: .25rem 0;
+  border-bottom: 1px solid #243042;
+}
+
+.ticket .r { text-align: right; }
+
+@media print {
+  .navbar, .mensajes, .btn, .btn-primary, .btn-light { display: none !important; }
+  body { background: #fff; }
+  .ticket {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+/* ----- Mensajes de error en línea (coherente con compras.css) ----- */
+.errorlist{
+  margin:.25rem 0 0;
+  padding:0;
+  list-style:none;
+  color:#fca5a5;
+  font-size:.85rem;
+}
+
+/* ----- Inputs readonly (si los usás para subtotales) ----- */
+input[readonly]{
+  background:#0f141c;
+  color:var(--text);
+  opacity:.9;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 768px) {
+  #pagos_mixtos { grid-template-columns: 1fr; }
+    .add-linea { grid-template-columns: 1fr 110px 1fr; }
+  .acciones { justify-content: stretch; }
+}
+
+
+/* Botón Agregar coherente con tu base */
+.form-venta .btn-agregar {
+  border:1px solid #243042;background:#18202a;color:var(--text);
+  padding:.45rem .8rem;border-radius:8px
+}
+.form-venta .btn-agregar:hover{background:#1f2937}
+
+
+.barcode-box {
+    margin-bottom: 0.8rem;
+}
+
+.barcode-box input {
+    background: #0f141c;
+    border: 1px solid #243042;
+    border-radius: 8px;
+    padding: .45rem .6rem;
+    color: var(--text);
+    width: 260px;
+}

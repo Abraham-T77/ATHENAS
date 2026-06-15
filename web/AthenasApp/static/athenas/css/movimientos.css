@@ -1,0 +1,176 @@
+/* ==========================================================
+   MÓDULO DE MOVIMIENTOS – Sistema Despensa Athenas
+   Alineado con base.css / compras.css / ventas.css
+   ========================================================== */
+
+/* ----- Contenedor y títulos ----- */
+.panel {
+  background: var(--card);
+  border: 1px solid #243042;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+.panel h1, .panel h2, .panel h3 {
+  margin-top: 0;
+  color: var(--text);
+}
+
+/* ----- Barra de filtros / acciones superiores ----- */
+.filter-bar {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.filter-bar input,
+.filter-bar select {
+  background: #0f141c;
+  border: 1px solid #243042;
+  border-radius: 8px;
+  padding: .45rem .6rem;
+  color: var(--text);
+  min-width: 160px;
+}
+.filter-bar input:focus,
+.filter-bar select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* ----- Tarjetas ligeras (resúmenes/indicadores) ----- */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+.kpi {
+  background: #141a23;
+  border: 1px solid #243042;
+  border-radius: 10px;
+  padding: .75rem;
+  color: var(--text);
+}
+.kpi .label { color: var(--muted); font-size: .9rem; }
+.kpi .value { font-size: 1.2rem; font-weight: 700; }
+
+/* ----- Tabla principal ----- */
+.table-wrap {
+  overflow-x: auto;
+  background: var(--card);
+  border-radius: 12px;
+  padding: .6rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  padding: .6rem .8rem;
+  border-bottom: 1px solid #243042;
+}
+.table thead th {
+  background: #141a23;
+  color: var(--primary);
+  font-weight: 600;
+  text-align: left;
+}
+.table tbody tr:hover {
+  background: #18202a;
+}
+.r { text-align: right; }
+.ta-center { text-align: center; }
+
+/* ----- Badges por tipo de movimiento ----- */
+.badge {
+  display: inline-block;
+  padding: .2rem .55rem;
+  border-radius: 999px;
+  font-size: .85rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+.badge-entrada {
+  background: #123b2a; color: #a7f3d0; border-color: #205c49;
+}
+.badge-salida {
+  background: #4b1e1e; color: #fca5a5; border-color: #703232;
+}
+.badge-ajuste {
+  background: #3f3b1a; color: #fcd34d; border-color: #665c1f;
+}
+
+/* ----- Formulario de alta/ajuste ----- */
+.form-mov {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .6rem 1rem;
+  background: #141a23;
+  border: 1px solid #243042;
+  border-radius: 12px;
+  padding: .8rem;
+  margin-bottom: 1rem;
+}
+.form-mov label {
+  display: block;
+  margin-bottom: .35rem;
+  color: var(--muted);
+}
+.form-mov input, .form-mov select, .form-mov textarea {
+  width: 100%;
+  background: #0f141c;
+  color: var(--text);
+  border: 1px solid #243042;
+  border-radius: 8px;
+  padding: .5rem .6rem;
+}
+.form-mov input:focus, .form-mov select:focus, .form-mov textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+.form-mov .wide { grid-column: 1 / -1; }
+
+/* ----- Acciones finales ----- */
+.acciones {
+  display: flex;
+  gap: .5rem;
+  justify-content: flex-end;
+  margin-top: .8rem;
+}
+.btn {
+  border: 1px solid #243042;
+  background: #18202a;
+  color: var(--text);
+  padding: .45rem .8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background .2s;
+}
+.btn:hover { background: #1f2937; }
+.btn-primary {
+  background: var(--primary);
+  color: #0c141a;
+  border-color: transparent;
+}
+.btn-primary:hover { filter: brightness(0.95); }
+.btn-light {
+  background: #2a3444;
+  color: #dbe4ff;
+  border-color: #2a3444;
+}
+.btn-light:hover { filter: brightness(1.05); }
+
+/* ----- Mensajes ----- */
+.mensajes { list-style: none; padding: 0; margin: 0 0 .6rem; }
+.msg { padding: .45rem .6rem; border-radius: 8px; margin-bottom: .4rem; }
+.msg.ok { background: #123b2a; color: #a7f3d0; border: 1px solid #205c49; }
+.msg.error { background: #4b1e1e; color: #fca5a5; border: 1px solid #703232; }
+
+/* ----- Responsive ----- */
+@media (max-width: 768px) {
+  .acciones { justify-content: stretch; }
+}

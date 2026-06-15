@@ -1,0 +1,85 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+{% block title %}Ventas{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/ventas.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Ventas</h1>
+
+  <div class="acciones" style="margin-bottom:1rem;">
+    <a class="btn-primary" href="{% url 'venta_nueva' %}">Nueva venta</a>
+  </div>
+
+  <form method="get" class="filtros" style="margin-bottom:1rem; display:flex; gap:.5rem; flex-wrap:wrap;">
+    <div>
+      <label>Estado</label>
+      <select name="estado">
+        <option value="">Todos</option>
+        <option value="CONFIRMADA" {% if f_estado == "CONFIRMADA" %}selected{% endif %}>CONFIRMADA</option>
+        <option value="BORRADOR"   {% if f_estado == "BORRADOR" %}selected{% endif %}>BORRADOR</option>
+        <option value="ANULADA"    {% if f_estado == "ANULADA" %}selected{% endif %}>ANULADA</option>
+      </select>
+    </div>
+    <div>
+      <label>Forma de pago</label>
+      <select name="forma">
+        <option value="">Todas</option>
+        <option value="Efectivo"      {% if f_forma == "Efectivo" %}selected{% endif %}>Efectivo</option>
+        <option value="Tarjeta"       {% if f_forma == "Tarjeta" %}selected{% endif %}>Tarjeta</option>
+        <option value="Transferencia" {% if f_forma == "Transferencia" %}selected{% endif %}>Transferencia</option>
+        <option value="Mixto"         {% if f_forma == "Mixto" %}selected{% endif %}>Mixto</option>
+      </select>
+    </div>
+    <div style="align-self:flex-end;">
+      <button type="submit" class="btn-primary">Filtrar</button>
+      <a href="{% url 'ventas_lista' %}" class="btn">Limpiar</a>
+    </div>
+  </form>
+
+  {% if ventas %}
+    <table class="tabla table-sm">
+      <thead>
+        <tr>
+          <th>Ticket</th>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Forma pago</th>
+          <th>Estado</th>
+          <th class="r">Total</th>
+          <th class="r">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in ventas %}
+          <tr>
+            <td>{{ v.numero_ticket }}</td>
+            <td>{{ v.fecha|date:"d/m/Y H:i" }}</td>
+
+            <td>
+              {% if v.cliente %}
+                  {{ v.cliente.nombre }}
+              {% else %}
+                  -
+              {% endif %}
+            </td>
+
+            <td>{{ v.forma_pago }}</td>
+            <td>{{ v.estado }}</td>
+            <td class="r">${{ v.total_neto|floatformat:2 }}</td>
+
+            <td class="r">
+              <a class="btn btn-sm" href="{% url 'venta_detalle' v.pk %}">Detalle</a>
+              <a class="btn btn-sm" href="{% url 'venta_ticket' v.pk %}" target="_blank">Ticket</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay ventas registradas.</p>
+  {% endif %}
+</section>
+{% endblock %}

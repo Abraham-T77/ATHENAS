@@ -1,0 +1,47 @@
+{% extends "athenas/base.html" %}
+{% load static %}
+
+{% block title %}Panel de Reportes{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'athenas/css/reportes.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>Panel de Reportes</h1>
+
+    <p class="intro">
+        Accedé a los distintos reportes operativos del sistema. Podés filtrar por rango de fechas,
+        exportar a PDF o Excel y analizar los resultados consolidados de ventas, compras y stock.
+    </p>
+
+    <!-- BOTONES PRINCIPALES -->
+    <div class="acciones">
+        <a href="{% url 'reportes_ventas' %}" class="btn-primary">Reporte de Ventas</a>
+        <a href="{% url 'reportes_compras' %}" class="btn-primary">Reporte de Compras</a>
+        <a href="{% url 'reportes_stock' %}" class="btn-primary">Reporte de Stock</a>
+    </div>
+
+    <!-- TARJETAS DE RESUMEN -->
+    <div class="resumen">
+        <article class="reporte-card">
+            <h3>Ventas</h3>
+            <p>{{ resumen_ventas.total }} ventas registradas</p>
+            <p>Total del mes: ${{ resumen_ventas.monto_total }}</p>
+        </article>
+
+        <article class="reporte-card">
+            <h3>Compras</h3>
+            <p>{{ resumen_compras.total }} compras registradas</p>
+            <p>Total del mes: ${{ resumen_compras.monto_total }}</p>
+        </article>
+
+        <article class="reporte-card">
+            <h3>Stock</h3>
+            <p>{{ resumen_stock.productos }} productos activos</p>
+            <p>Valor total de precio venta: ${{ resumen_stock.valor_total }}</p>
+        </article>
+    </div>
+</section>
+{% endblock %}

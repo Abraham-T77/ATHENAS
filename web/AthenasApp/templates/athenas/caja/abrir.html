@@ -8,10 +8,12 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-  <h1>Abrir caja</h1>
+<section class="form-section">
+  <div class="page-header">
+    <h1>Abrir caja</h1>
+  </div>
 
-  <form method="post" class="grid-venta" style="margin-top:.75rem;">
+  <form method="post" class="form-section-content" style="margin-top:.75rem;">
     {% csrf_token %}
 
     <!-- Saldo inicial -->
@@ -29,8 +31,8 @@
       >
     </div>
 
-    <div style="grid-column:1/-1;text-align:right;margin-top:.5rem;">
-      <button type="submit" class="btn-primary">Abrir caja</button>
+    <div class="page-actions mt-3">
+      <button type="submit" class="btn btn-primary">Abrir caja</button>
       <a class="btn" href="{% url 'caja_lista' %}">Volver a la lista</a>
       <a class="btn" href="{% url 'caja_estado' %}">Ver estado</a>
     </div>

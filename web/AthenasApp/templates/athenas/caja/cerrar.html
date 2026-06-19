@@ -8,19 +8,23 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-  <h1>Cerrar caja</h1>
+<section class="form-section">
+  <div class="page-header">
+    <h1>Cerrar caja</h1>
+  </div>
 
   {# Si la caja ya está cerrada, mostrar aviso y volver #}
   {% if caja.estado != "ABIERTA" %}
     <p class="msg error">
       Esta caja ya está cerrada (estado actual: {{ caja.estado }}).
     </p>
-    <a class="btn" href="{% url 'caja_lista' %}">Volver a la lista</a>
+    <div class="page-actions mt-3">
+      <a class="btn" href="{% url 'caja_lista' %}">Volver a la lista</a>
+    </div>
   
   {% else %}
 
-    <div class="grid-venta" style="margin-top:.75rem;">
+    <div class="form-group-row" style="margin-top:.75rem;">
       <div>
         <label>ID Caja</label>
         <input class="form-control" value="{{ caja.id_caja|default:caja.pk }}" readonly>
@@ -50,10 +54,11 @@
 
     <form method="post" style="margin-top:1rem;">
       {% csrf_token %}
-      <button type="submit" class="btn-primary">Confirmar cierre de caja</button>
-
-      <a class="btn" href="{% url 'caja_detalle' caja.pk %}">Ver movimientos</a>
-      <a class="btn" href="{% url 'caja_lista' %}">Cancelar</a>
+      <div class="page-actions">
+        <button type="submit" class="btn btn-primary">Confirmar cierre de caja</button>
+        <a class="btn" href="{% url 'caja_detalle' caja.pk %}">Ver movimientos</a>
+        <a class="btn" href="{% url 'caja_lista' %}">Cancelar</a>
+      </div>
     </form>
 
   {% endif %}

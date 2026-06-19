@@ -10,10 +10,14 @@
 </head>
 <body>
   {% include 'athenas/includes/_navbar.html' %}
-  <main class="contenedor">
+  <main class="container mt-4">
     {% include 'athenas/includes/_messages.html' %}
     {% block content %}{% endblock %}
   </main>
+
+  <footer class="contenedor mt-4">
+    <small class="mb-0">Athenas — Proyecto local. Repositorio: <a href="https://github.com/Abraham-T77/ATHENAS" target="_blank" rel="noopener">ATHENAS</a></small>
+  </footer>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

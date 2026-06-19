@@ -2,23 +2,27 @@
 {% block title %}Usuarios{% endblock %}
 {% block content %}
 
-<section class="tarjeta">
-  <div style="display:flex;justify-content:space-between;align-items:center;">
+<section class="list-section">
+  <div class="page-header d-flex justify-content-between align-items-center">
     <h1>Usuarios</h1>
-    <a href="{% url 'crear_usuario' %}" class="btn btn-outline-primary">+ Usuario</a>
+    <div class="page-actions">
+      <a href="{% url 'crear_usuario' %}" class="btn btn-primary">+ Usuario</a>
+    </div>
   </div>
 
-  <form method="get" class="filtros" style="margin:1rem 0;display:flex;gap:.5rem;align-items:center;">
+  <form method="get" class="page-filters" style="margin:1rem 0;display:flex;gap:.5rem;flex-wrap:wrap;">
     <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Buscar usuario...">
     <select name="estado">
       <option value="activos" {% if request.GET.estado == "activos" or not request.GET.estado %}selected{% endif %}>Activos</option>
       <option value="inactivos" {% if request.GET.estado == "inactivos" %}selected{% endif %}>Inactivos</option>
       <option value="todos" {% if request.GET.estado == "todos" %}selected{% endif %}>Todos</option>
     </select>
-    <button type="submit">Filtrar</button>
+    <div class="align-end" style="align-self:flex-end;">
+      <button class="btn btn-primary" type="submit">Filtrar</button>
+    </div>
   </form>
 
-  <table class="tabla">
+  <table class="table table-sm">
     <thead>
       <tr>
         <th>Usuario</th>

@@ -5,85 +5,100 @@
 <div class="container mt-4">
   {% include 'athenas/includes/_messages.html' %}
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Clientes</h3>
-    {% if perms.AthenasApp.add_clientes %}
-      <a class="btn btn-primary" href="{% url 'clientes_nuevo' %}">+ Nuevo Cliente</a>
-    {% endif %}
-  </div>
-
-  <form class="row g-2 mb-3" method="get">
-    <div class="col-md-4">
-      <input type="text" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Buscar por nombre o DNI">
+  <section class="tarjeta">
+    <div class="page-header">
+      <h1>Clientes</h1>
+      <p class="page-subtitle">Gestión de cartera de clientes</p>
     </div>
-    <div class="col-md-3">
-      <select name="estado" class="form-select">
-        <option value="activos" {% if request.GET.estado == 'activos' or not request.GET.estado %}selected{% endif %}>Activos</option>
-        <option value="inactivos" {% if request.GET.estado == 'inactivos' %}selected{% endif %}>Inactivos</option>
-        <option value="todos" {% if request.GET.estado == 'todos' %}selected{% endif %}>Todos</option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      <button class="btn btn-outline-secondary w-100" type="submit">Filtrar</button>
-    </div>
-  </form>
 
-  <div class="table-responsive">
-    <table class="table table-sm align-middle">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>DNI</th>
-          <th>Teléfono</th>
-          <th>Email</th>
-          <th>Dirección</th>
-          <th>Saldo C/C</th>
-          <th>Estado</th>
-          <th class="text-end">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in items %}
-        <tr class="{% if not c.activo %}fila-inactiva{% endif %}">
-          <td>{{ c.nombre }}</td>
-          <td>{{ c.dni|default:"-" }}</td>
-          <td>{{ c.telefono|default:"-" }}</td>
-          <td>{{ c.email|default:"-" }}</td>
-          <td>{{ c.direccion|default:"-" }}</td>
-          <td>${{ c.saldo_cuenta_corriente }}</td>
-          <td>
-            <span class="estado-badge {% if c.activo %}ok{% else %}off{% endif %}">
-              {% if c.activo %}Activo{% else %}Inactivo{% endif %}
-            </span>
-          </td>
-          <td class="text-end">
-            {% if perms.AthenasApp.change_clientes %}
-              <a class="btn btn-sm btn-outline-primary" href="{% url 'clientes_editar' c.pk %}">Editar</a>
-              <a class="btn btn-sm btn-outline-secondary" href="{% url 'clientes_toggle' c.pk %}">
-                {% if c.activo %}Dar de baja{% else %}Dar de alta{% endif %}
-              </a>
-            {% endif %}
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="8" class="text-center">Sin resultados.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    <div class="page-actions">
+      <div class="page-actions-left">
+        {% if perms.AthenasApp.add_clientes %}
+          <a class="btn btn-primary" href="{% url 'clientes_nuevo' %}">+ Nuevo Cliente</a>
+        {% endif %}
+      </div>
+    </div>
 
-  {% if is_paginated %}
-    <nav>
-      <ul class="pagination">
+    <form class="page-filters" method="get">
+      <div class="page-filters-group">
+        <label>Búsqueda</label>
+        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Nombre o DNI..." class="form-control">
+      </div>
+      <div class="page-filters-group">
+        <label>Estado</label>
+        <select name="estado" class="form-select">
+          <option value="activos" {% if request.GET.estado == 'activos' or not request.GET.estado %}selected{% endif %}>Activos</option>
+          <option value="inactivos" {% if request.GET.estado == 'inactivos' %}selected{% endif %}>Inactivos</option>
+          <option value="todos" {% if request.GET.estado == 'todos' %}selected{% endif %}>Todos</option>
+        </select>
+      </div>
+      <div class="page-filters-group">
+        <button class="btn btn-primary" type="submit">Filtrar</button>
+      </div>
+    </form>
+
+    <div class="list-section">
+      <div class="list-section-header">
+        <h3>Listado de Clientes</h3>
+      </div>
+      <div class="list-section-body">
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>DNI</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Dirección</th>
+                <th>Saldo C/C</th>
+                <th>Estado</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in items %}
+              <tr class="{% if not c.activo %}fila-inactiva{% endif %}">
+                <td>{{ c.nombre }}</td>
+                <td>{{ c.dni|default:"-" }}</td>
+                <td>{{ c.telefono|default:"-" }}</td>
+                <td>{{ c.email|default:"-" }}</td>
+                <td>{{ c.direccion|default:"-" }}</td>
+                <td>${{ c.saldo_cuenta_corriente|floatformat:2 }}</td>
+                <td>
+                  <span class="estado-badge {% if c.activo %}ok{% else %}off{% endif %}">
+                    {% if c.activo %}Activo{% else %}Inactivo{% endif %}
+                  </span>
+                </td>
+                <td class="text-end">
+                  {% if perms.AthenasApp.change_clientes %}
+                    <a class="btn btn-sm btn-outline-primary" href="{% url 'clientes_editar' c.pk %}">Editar</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'clientes_toggle' c.pk %}">
+                      {% if c.activo %}Dar de baja{% else %}Dar de alta{% endif %}
+                    </a>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="8" class="text-center"><em>Sin resultados.</em></td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {% if is_paginated %}
+      <div class="d-flex gap-2 mt-4 align-items-center" style="justify-content:flex-start;">
         {% if page_obj.has_previous %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+          <a class="btn btn-outline-secondary" href="?page={{ page_obj.previous_page_number }}">← Anterior</a>
         {% endif %}
-        <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+        <span style="color:var(--muted);">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+          <a class="btn btn-outline-secondary" href="?page={{ page_obj.next_page_number }}">Siguiente →</a>
         {% endif %}
-      </ul>
-    </nav>
-  {% endif %}
+      </div>
+    {% endif %}
+  </section>
 </div>
 {% endblock %}

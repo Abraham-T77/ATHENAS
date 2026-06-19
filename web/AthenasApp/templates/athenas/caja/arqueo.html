@@ -7,17 +7,21 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-  <h1>Arqueo de caja</h1>
+<section class="form-section">
+  <div class="page-header">
+    <h1>Arqueo de caja</h1>
+  </div>
 
   {% if not caja_activa %}
     <p class="msg error">No hay una caja abierta para tu usuario.</p>
-    <a class="btn btn-primary" href="{% url 'caja_apertura' %}">Abrir caja</a>
+    <div class="page-actions mt-3">
+      <a class="btn btn-primary" href="{% url 'caja_apertura' %}">Abrir caja</a>
+    </div>
   {% else %}
 
-    <p>Completá el conteo físico. El total se calcula automáticamente.</p>
+    <p style="margin: 1rem 0;">Completá el conteo físico. El total se calcula automáticamente.</p>
 
-    <form method="post" class="grid-venta" id="form-arqueo" style="margin-top:.75rem;">
+    <form method="post" class="form-section-content" id="form-arqueo" style="margin-top:.75rem;">
       {% csrf_token %}
 
       {% for den in denominaciones %}
@@ -35,7 +39,7 @@
         </div>
       {% endfor %}
 
-      <div style="grid-column:1/-1;display:flex;gap:1rem;justify-content:flex-end;margin-top:1rem;">
+      <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:1rem;">
         <div>
           <label>Total efectivo contado</label>
           <input id="total_contado" class="form-control" type="text" value="$0,00" readonly>

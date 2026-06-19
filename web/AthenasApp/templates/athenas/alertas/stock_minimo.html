@@ -8,14 +8,16 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-  <h1>Productos con Stock Bajo o Agotado</h1>
+<section class="list-section">
+  <div class="page-header">
+    <h1>Productos con Stock Bajo o Agotado</h1>
+  </div>
 
-  <p class="intro">
+  <p class="intro" style="margin: 1rem 0;">
     Listado de productos cuyo stock actual se encuentra igual o por debajo del mínimo permitido.
   </p>
 
-  <table class="tabla">
+  <table class="table table-sm">
     <thead>
       <tr>
         <th>Producto</th>
@@ -38,7 +40,7 @@
     </tbody>
   </table>
 
-  <div class="acciones">
+  <div class="page-actions mt-3">
     <a href="{% url 'alertas_panel' %}" class="btn">Volver</a>
   </div>
 </section>

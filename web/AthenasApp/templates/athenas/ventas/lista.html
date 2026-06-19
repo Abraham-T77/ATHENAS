@@ -6,17 +6,18 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-  <h1>Ventas</h1>
-
-  <div class="acciones" style="margin-bottom:1rem;">
-    <a class="btn-primary" href="{% url 'venta_nueva' %}">Nueva venta</a>
+<section class="list-section">
+  <div class="page-header d-flex justify-content-between align-items-center">
+    <h1>Ventas</h1>
+    <div class="page-actions">
+      <a class="btn btn-primary" href="{% url 'venta_nueva' %}">Nueva venta</a>
+    </div>
   </div>
 
-  <form method="get" class="filtros" style="margin-bottom:1rem; display:flex; gap:.5rem; flex-wrap:wrap;">
+  <form method="get" class="page-filters filtros mt-4 d-flex flex-wrap" style="gap:.5rem; margin-bottom:1rem;">
     <div>
       <label>Estado</label>
-      <select name="estado">
+      <select name="estado" class="form-select">
         <option value="">Todos</option>
         <option value="CONFIRMADA" {% if f_estado == "CONFIRMADA" %}selected{% endif %}>CONFIRMADA</option>
         <option value="BORRADOR"   {% if f_estado == "BORRADOR" %}selected{% endif %}>BORRADOR</option>
@@ -25,7 +26,7 @@
     </div>
     <div>
       <label>Forma de pago</label>
-      <select name="forma">
+      <select name="forma" class="form-select">
         <option value="">Todas</option>
         <option value="EFECTIVO"      {% if f_forma == "EFECTIVO" %}selected{% endif %}>Efectivo</option>
         <option value="TARJETA"       {% if f_forma == "TARJETA" %}selected{% endif %}>Tarjeta</option>
@@ -33,14 +34,15 @@
         <option value="MIXTO"         {% if f_forma == "MIXTO" %}selected{% endif %}>Mixto</option>
       </select>
     </div>
-    <div style="align-self:flex-end;">
-      <button type="submit" class="btn-primary">Filtrar</button>
-      <a href="{% url 'ventas_lista' %}" class="btn">Limpiar</a>
+    <div class="align-end" style="align-self:flex-end;">
+      <button type="submit" class="btn btn-primary">Filtrar</button>
+      <a href="{% url 'ventas_lista' %}" class="btn btn">Limpiar</a>
     </div>
   </form>
 
   {% if ventas %}
-    <table class="tabla table-sm">
+    <div class="table-responsive list-table">
+    <table class="table table-sm">
       <thead>
         <tr>
           <th>Ticket</th>
@@ -78,8 +80,10 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
   {% else %}
     <p>No hay ventas registradas.</p>
   {% endif %}
+
 </section>
 {% endblock %}

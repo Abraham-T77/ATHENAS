@@ -5,23 +5,27 @@
 <link rel="stylesheet" href="{% static 'athenas/css/movimientos.css' %}">
 {% endblock %}
 {% block content %}
-<section class="panel">
-  <div class="d-flex justify-content-between align-items-center">
+<section class="list-section">
+  <div class="page-header d-flex justify-content-between align-items-center">
     <h1 class="mb-0">Ajustes de stock</h1>
-    <a class="btn btn-primary" href="{% url 'ajuste_stock' %}">+ Nuevo ajuste</a>
+    <div class="page-actions">
+      <a class="btn btn-primary" href="{% url 'ajuste_stock' %}">+ Nuevo ajuste</a>
+    </div>
   </div>
 
-  <form method="get" class="filter-bar" style="margin:.75rem 0;">
+  <form method="get" class="page-filters" style="margin:.75rem 0; display:flex; gap:.5rem; flex-wrap:wrap;">
     <input class="form-control" type="text" name="q" value="{{ request.GET.q }}" placeholder="Buscar por producto o usuario">
     <select class="form-select" name="tipo">
       <option value="">Todos</option>
       <option value="ENTRADA" {% if request.GET.tipo == "ENTRADA" %}selected{% endif %}>Entrada</option>
       <option value="SALIDA"  {% if request.GET.tipo == "SALIDA" %}selected{% endif %}>Salida</option>
     </select>
-    <button class="btn" type="submit">Filtrar</button>
+    <div class="align-end" style="align-self:flex-end;">
+      <button class="btn btn-primary" type="submit">Filtrar</button>
+    </div>
   </form>
 
-  <div class="table-wrap">
+  <div class="list-table">
     <table class="table table-sm align-middle">
       <thead>
         <tr>

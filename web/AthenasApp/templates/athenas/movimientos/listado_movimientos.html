@@ -5,10 +5,12 @@
 <link rel="stylesheet" href="{% static 'athenas/css/movimientos.css' %}">
 {% endblock %}
 {% block content %}
-<section class="panel">
-  <h1>Movimientos de stock</h1>
+<section class="list-section">
+  <div class="page-header">
+    <h1>Movimientos de stock</h1>
+  </div>
 
-  <form method="get" class="filter-bar" style="margin:.75rem 0;">
+  <form method="get" class="page-filters" style="margin:.75rem 0; display:flex; gap:.5rem; flex-wrap:wrap;">
     <input class="form-control" type="text" name="q" value="{{ request.GET.q }}" placeholder="Producto / usuario">
     <select class="form-select" name="tipo">
       <option value="">Todos</option>
@@ -17,10 +19,12 @@
     </select>
     <input class="form-control" type="date" name="desde" value="{{ request.GET.desde }}">
     <input class="form-control" type="date" name="hasta" value="{{ request.GET.hasta }}">
-    <button class="btn" type="submit">Filtrar</button>
+    <div class="align-end" style="align-self:flex-end;">
+      <button class="btn btn-primary" type="submit">Filtrar</button>
+    </div>
   </form>
 
-  <div class="table-wrap">
+  <div class="list-table">
     <table class="table table-sm align-middle">
       <thead>
         <tr>

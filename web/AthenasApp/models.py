@@ -427,7 +427,7 @@ class Venta(models.Model):
 
     def anular(self, usuario):
         """
-        Anula una venta confirmada: repone stock y marca estado como ANULADA.
+        Anula una venta confirmada: repone stock, revierte caja y marca estado como ANULADA.
         Registra bitácora y un movimiento de stock de ENTRADA por cada ítem.
         """
         if self.estado != self.ESTADO_CONFIRMADA:
@@ -447,6 +447,22 @@ class Venta(models.Model):
                 producto=prod,
                 usuario=self.usuario  # espejo (Usuarios) si tu Venta.usuario es Usuarios
             )
+
+        # Revertir los ingresos de caja generados por la venta cancelada
+        if self.caja_id:
+            ingresos_venta = MovimientoCaja.objects.filter(
+                caja_usuario__caja=self.caja,
+                tipo="INGRESO",
+                referencia=str(self.pk)
+            )
+            for ingreso in ingresos_venta:
+                MovimientoCaja.registrar_automatico(
+                    caja_usuario=ingreso.caja_usuario,
+                    tipo="EGRESO",
+                    monto=ingreso.monto,
+                    motivo=f"Reversión anulación venta {self.numero_ticket}",
+                    referencia=str(self.pk)
+                )
 
         self.estado = self.ESTADO_ANULADA
         self.save()
@@ -792,6 +808,8 @@ class Caja(models.Model):
         ]
 
     def calcular_saldo(self):
+        # El arqueo registra un recuento de efectivo, pero no debe sumarse como
+        # ingreso o egreso operativos al saldo final de la caja.
         ingresos = MovimientoCaja.objects.filter(caja_usuario__caja=self, tipo="INGRESO").aggregate(models.Sum("monto"))["monto__sum"] or 0
         egresos = MovimientoCaja.objects.filter(caja_usuario__caja=self, tipo="EGRESO").aggregate(models.Sum("monto"))["monto__sum"] or 0
         return self.saldo_inicial + ingresos - egresos
@@ -822,6 +840,7 @@ class MovimientoCaja(models.Model):
     TIPOS = [
         ("INGRESO", "Ingreso"),
         ("EGRESO", "Egreso"),
+        ("ARQUEO", "Arqueo"),
     ]
 
     caja_usuario = models.ForeignKey(CajaUsuario, on_delete=models.CASCADE)

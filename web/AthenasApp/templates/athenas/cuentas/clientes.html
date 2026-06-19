@@ -8,15 +8,19 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-  <h1>Cuentas Corrientes de Clientes</h1>
+<section class="list-section">
+  <div class="page-header">
+    <h1>Cuentas Corrientes de Clientes</h1>
+  </div>
 
-  <form method="get" class="filtros">
-    <input type="text" name="buscar" placeholder="Buscar cliente..." value="{{ request.GET.buscar }}">
-    <button type="submit" class="btn">Buscar</button>
+  <form method="get" class="page-filters" style="margin: 1rem 0; display:flex; gap:.5rem; flex-wrap:wrap;">
+    <input type="text" name="buscar" placeholder="Buscar cliente..." value="{{ request.GET.buscar }}" class="form-control" style="flex:1; min-width:200px;">
+    <div class="align-end" style="align-self:flex-end;">
+      <button type="submit" class="btn btn-primary">Buscar</button>
+    </div>
   </form>
 
-  <table class="tabla">
+  <table class="table table-sm">
     <thead>
       <tr>
         <th>Cliente</th>
@@ -43,7 +47,7 @@
     </tbody>
   </table>
 
-  <div class="acciones">
+  <div class="page-actions mt-3">
     <a href="{% url 'cuentas_panel' %}" class="btn">Volver</a>
   </div>
 </section>

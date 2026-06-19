@@ -8,36 +8,38 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-    <h1>Panel de Reportes</h1>
+<section class="list-section">
+    <div class="page-header">
+      <h1>Panel de Reportes</h1>
+    </div>
 
-    <p class="intro">
+    <p class="intro" style="margin: 1rem 0;">
         Accedé a los distintos reportes operativos del sistema. Podés filtrar por rango de fechas,
         exportar a PDF o Excel y analizar los resultados consolidados de ventas, compras y stock.
     </p>
 
     <!-- BOTONES PRINCIPALES -->
-    <div class="acciones">
-        <a href="{% url 'reportes_ventas' %}" class="btn-primary">Reporte de Ventas</a>
-        <a href="{% url 'reportes_compras' %}" class="btn-primary">Reporte de Compras</a>
-        <a href="{% url 'reportes_stock' %}" class="btn-primary">Reporte de Stock</a>
+    <div class="page-actions" style="margin: 1.5rem 0;">
+        <a href="{% url 'reportes_ventas' %}" class="btn btn-primary">Reporte de Ventas</a>
+        <a href="{% url 'reportes_compras' %}" class="btn btn-primary">Reporte de Compras</a>
+        <a href="{% url 'reportes_stock' %}" class="btn btn-primary">Reporte de Stock</a>
     </div>
 
     <!-- TARJETAS DE RESUMEN -->
-    <div class="resumen">
-        <article class="reporte-card">
+    <div class="dashboard-grid">
+        <article class="dashboard-card">
             <h3>Ventas</h3>
             <p>{{ resumen_ventas.total }} ventas registradas</p>
             <p>Total del mes: ${{ resumen_ventas.monto_total }}</p>
         </article>
 
-        <article class="reporte-card">
+        <article class="dashboard-card">
             <h3>Compras</h3>
             <p>{{ resumen_compras.total }} compras registradas</p>
             <p>Total del mes: ${{ resumen_compras.monto_total }}</p>
         </article>
 
-        <article class="reporte-card">
+        <article class="dashboard-card">
             <h3>Stock</h3>
             <p>{{ resumen_stock.productos }} productos activos</p>
             <p>Valor total de precio venta: ${{ resumen_stock.valor_total }}</p>

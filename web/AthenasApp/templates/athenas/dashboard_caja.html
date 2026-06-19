@@ -1,11 +1,33 @@
 {% extends "athenas/base.html" %}
 {% block title %}Panel - Caja{% endblock %}
 {% block content %}
-<section class="panel">
-  <h1>Panel Caja</h1>
-  <div class="grid-cards">
-    <a class="card" href="{% url 'venta_nueva' %}">Nueva Venta</a>
-    <a class="card" href="{% url 'productos_lista' %}">Productos (ver)</a>
-  </div>
-</section>
+<div class="dashboard-section">
+  <section class="dashboard-welcome">
+    <h1>Panel de Caja</h1>
+    <p class="subtitle">Gestiona operaciones de caja y ventas</p>
+    <div class="role-info">
+      {% if NEGOCIO_ACTUAL %}
+        <span class="navbar-badge">Negocio: <strong>{{ NEGOCIO_ACTUAL.detalle }}</strong></span>
+      {% endif %}
+      <span class="navbar-badge">Usuario: <strong>{{ request.user.get_username }}</strong></span>
+      <span class="navbar-badge">Operador de Caja</span>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2 style="margin:0 0 24px 0;font-size:1.25rem;font-weight:700">Operaciones Principales</h2>
+    <div class="dashboard-grid">
+      <a class="dashboard-card" href="{% url 'venta_nueva' %}">
+        <div class="icon">💳</div>
+        <h3>Nueva Venta</h3>
+        <p class="dashboard-card-desc">Registra una venta</p>
+      </a>
+      <a class="dashboard-card" href="{% url 'productos_lista' %}">
+        <div class="icon">📦</div>
+        <h3>Ver Productos</h3>
+        <p class="dashboard-card-desc">Consulta disponibilidad</p>
+      </a>
+    </div>
+  </section>
+</div>
 {% endblock %}

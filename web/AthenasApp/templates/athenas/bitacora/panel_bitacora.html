@@ -8,26 +8,28 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-  <h1>Bitácora del Sistema</h1>
+<section class="list-section">
+  <div class="page-header">
+    <h1>Bitácora del Sistema</h1>
+  </div>
 
-  <p class="intro">
+  <p class="intro" style="margin: 1rem 0;">
     En este módulo se registran eventos generales del sistema.
   </p>
 
-  <div class="acciones">
-    <a href="{% url 'bitacora_lista' %}" class="btn-primary">Ver Registros</a>
+  <div class="page-actions" style="margin: 1rem 0;">
+    <a href="{% url 'bitacora_lista' %}" class="btn btn-primary">Ver Registros</a>
     <a href="{% url 'bitacora_exportar_pdf' %}" class="btn-sm">PDF</a>
     <a href="{% url 'bitacora_exportar_excel' %}" class="btn-sm">Excel</a>
   </div>
 
-  <div class="resumen">
-    <article class="bitacora-card">
+  <div class="dashboard-grid">
+    <article class="dashboard-card">
       <h3>Total de Registros</h3>
       <p>{{ total_registros }}</p>
     </article>
 
-    <article class="bitacora-card">
+    <article class="dashboard-card">
       <h3>Último Evento</h3>
 
       {% if ultimo_evento %}

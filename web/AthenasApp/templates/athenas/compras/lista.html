@@ -8,90 +8,105 @@
 
 {% block content %}
 <section class="container">
-  <header class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">Compras</h1>
-    <div>
-      {% if perms.AthenasApp.add_compras %}
-        <a href="{% url 'compras_crear' %}" class="btn btn-primary">+ Nueva compra</a>
-      {% endif %}
+  <section class="tarjeta">
+    <div class="page-header">
+      <h1>Compras</h1>
+      <p class="page-subtitle">Registro y gestión de compras a proveedores</p>
     </div>
-  </header>
 
-  <form method="get" class="d-flex gap-2 mb-3">
-    <input class="form-control" type="text" name="q" value="{{ request.GET.q }}" placeholder="Buscar por proveedor o nº de comprobante">
-    <select class="form-select" name="estado" style="max-width:220px">
-      <option value="">Todos</option>
-      <option value="BORRADOR"   {% if request.GET.estado == "BORRADOR" %}selected{% endif %}>Borradores</option>
-      <option value="CONFIRMADA" {% if request.GET.estado == "CONFIRMADA" %}selected{% endif %}>Confirmadas</option>
-      <option value="ANULADA"    {% if request.GET.estado == "ANULADA" %}selected{% endif %}>Anuladas</option>
-    </select>
-    <button type="submit" class="btn">Filtrar</button>
-  </form>
+    <div class="page-actions">
+      <div class="page-actions-left">
+        {% if perms.AthenasApp.add_compras %}
+          <a href="{% url 'compras_crear' %}" class="btn btn-primary">+ Nueva Compra</a>
+        {% endif %}
+      </div>
+    </div>
 
-  <div class="table-wrap">
-    <table class="table align-middle">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Proveedor</th>
-          <th>Fecha</th>
-          <th>Total</th>
-          <th>Estado</th>
-          <th class="text-end">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in items %}
-        <tr>
-          <td>{{ c.id_compra }}</td>
-          <td>{{ c.proveedor.razon_social }}</td>
-          <td>{{ c.fecha|date:"d/m/Y H:i" }}</td>
-          <td>${{ c.total|floatformat:2 }}</td>
-          <td>
-            {% if c.estado == 'BORRADOR' %}
-              <span class="estado-badge">{{ c.estado|title }}</span>
-            {% elif c.estado == 'CONFIRMADA' %}
-              <span class="estado-badge ok">Confirmada</span>
-            {% else %}
-              <span class="estado-badge off">Anulada</span>
-            {% endif %}
-          </td>
-          <td class="text-end">
-            <a class="btn btn-light" href="{% url 'compras_detalle' c.id_compra %}">Ver</a>
-            {% if c.estado == 'BORRADOR' %}
-              <a class="btn btn-outline-danger ms-1"
-                href="{% url 'compras_anular' c.id_compra %}"
-                onclick="return confirm('¿Seguro que deseas eliminar esta compra borrador?');">Eliminar</a>
-            {% elif c.estado == 'CONFIRMADA' %}
-              <a class="btn btn-outline-warning ms-1"
-                href="{% url 'compras_anular' c.id_compra %}"
-                onclick="return confirm('¿Seguro que deseas anular esta compra confirmada?');">Anular</a>
-            {% endif %}
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="6" class="ta-center">No hay compras registradas.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    <form method="get" class="page-filters">
+      <div class="page-filters-group">
+        <label>Búsqueda</label>
+        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Proveedor o comprobante..." class="form-control">
+      </div>
+      <div class="page-filters-group">
+        <label>Estado</label>
+        <select name="estado" class="form-select">
+          <option value="">Todos</option>
+          <option value="BORRADOR"   {% if request.GET.estado == "BORRADOR" %}selected{% endif %}>Borradores</option>
+          <option value="CONFIRMADA" {% if request.GET.estado == "CONFIRMADA" %}selected{% endif %}>Confirmadas</option>
+          <option value="ANULADA"    {% if request.GET.estado == "ANULADA" %}selected{% endif %}>Anuladas</option>
+        </select>
+      </div>
+      <div class="page-filters-group">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+      </div>
+    </form>
 
-  {% if is_paginated %}
-  <ul class="pagination">
-    {% if page_obj.has_previous %}
-      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}">«</a></li>
-    {% else %}
-      <li class="page-item disabled"><span class="page-link">«</span></li>
+    <div class="list-section">
+      <div class="list-section-header">
+        <h3>Listado de Compras</h3>
+      </div>
+      <div class="list-section-body">
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Proveedor</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in items %}
+              <tr>
+                <td>{{ c.id_compra }}</td>
+                <td>{{ c.proveedor.razon_social }}</td>
+                <td>{{ c.fecha|date:"d/m/Y H:i" }}</td>
+                <td>${{ c.total|floatformat:2 }}</td>
+                <td>
+                  {% if c.estado == 'BORRADOR' %}
+                    <span class="estado-badge">Borrador</span>
+                  {% elif c.estado == 'CONFIRMADA' %}
+                    <span class="estado-badge ok">Confirmada</span>
+                  {% else %}
+                    <span class="estado-badge off">Anulada</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">
+                  <a class="btn btn-sm btn-outline-primary" href="{% url 'compras_detalle' c.id_compra %}">Ver</a>
+                  {% if c.estado == 'BORRADOR' %}
+                    <a class="btn btn-sm btn-outline-danger"
+                      href="{% url 'compras_anular' c.id_compra %}"
+                      onclick="return confirm('¿Seguro que deseas eliminar esta compra?');">Eliminar</a>
+                  {% elif c.estado == 'CONFIRMADA' %}
+                    <a class="btn btn-sm btn-outline-warning"
+                      href="{% url 'compras_anular' c.id_compra %}"
+                      onclick="return confirm('¿Seguro que deseas anular esta compra?');">Anular</a>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="6" class="text-center"><em>Sin compras registradas.</em></td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {% if is_paginated %}
+      <div class="d-flex gap-2 mt-4 align-items-center" style="justify-content:flex-start;">
+        {% if page_obj.has_previous %}
+          <a class="btn btn-outline-secondary" href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}">← Anterior</a>
+        {% endif %}
+        <span style="color:var(--muted);">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a class="btn btn-outline-secondary" href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}">Siguiente →</a>
+        {% endif %}
+      </div>
     {% endif %}
-
-    <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
-
-    {% if page_obj.has_next %}
-      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}">»</a></li>
-    {% else %}
-      <li class="page-item disabled"><span class="page-link">»</span></li>
-    {% endif %}
-  </ul>
-  {% endif %}
+  </section>
 </section>
 {% endblock %}

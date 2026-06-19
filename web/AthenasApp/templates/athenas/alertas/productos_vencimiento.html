@@ -8,12 +8,14 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-    <h1>Productos Vencidos o Próximos a Vencer</h1>
+<section class="list-section">
+    <div class="page-header">
+      <h1>Productos Vencidos o Próximos a Vencer</h1>
+    </div>
 
-    <h2>Productos Vencidos</h2>
+    <h2 style="margin-top: 1.5rem; margin-bottom: 1rem; padding-bottom:0.5rem; border-bottom: 1px solid #ddd;">Productos Vencidos</h2>
 
-    <table class="tabla">
+    <table class="table table-sm">
         <thead>
             <tr>
                 <th>Producto</th>
@@ -36,9 +38,9 @@
         </tbody>
     </table>
 
-    <h2 style="margin-top:2rem;">Próximos a Vencer (15 días)</h2>
+    <h2 style="margin-top:2rem; margin-bottom: 1rem; padding-bottom:0.5rem; border-bottom: 1px solid #ddd;">Próximos a Vencer (15 días)</h2>
 
-    <table class="tabla">
+    <table class="table table-sm">
         <thead>
             <tr>
                 <th>Producto</th>
@@ -63,7 +65,7 @@
         </tbody>
     </table>
 
-    <div class="acciones">
+    <div class="page-actions mt-3">
         <a href="{% url 'alertas_panel' %}" class="btn">Volver</a>
     </div>
 

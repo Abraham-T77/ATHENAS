@@ -1,132 +1,91 @@
 {% load grupos %}
 {% with name=request.resolver_match.url_name %}
 <header class="navbar">
-  <div class="brand">
-    <a href="{% url 'dashboard' %}" style="color:inherit;text-decoration:none;">Athenas</a>
+  <div class="contenedor">
+    <!-- MARCA Y CONTEXTO -->
+    <div class="brand">
+      <a href="{% url 'dashboard' %}">Athenas</a>
+    </div>
 
+    <!-- MENÚ PRINCIPAL -->
+    <nav class="menu">
+      {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}" class="{% if name == 'dashboard' %}active{% endif %}">Inicio</a>
+        <a href="{% url 'productos_lista' %}" class="{% if name in 'productos_lista productos_crear productos_editar' %}active{% endif %}">Productos</a>
+        
+        {% if perms.AthenasApp.view_venta %}
+          <a href="{% url 'ventas_lista' %}" class="{% if name in 'ventas_lista venta_nueva ventas_detalle ventas_ticket' %}active{% endif %}">Ventas</a>
+        {% endif %}
+
+        {% if perms.AthenasApp.view_compras %}
+          <a href="{% url 'compras_lista' %}" class="{% if name in 'compras_lista compras_crear compras_editar compras_detalle' %}active{% endif %}">Compras</a>
+        {% endif %}
+
+        {% if perms.AthenasApp.view_caja %}
+          <a href="{% url 'caja_estado' %}" class="{% if name == 'caja_estado' %}active{% endif %}">Caja</a>
+        {% endif %}
+
+        {% if perms.AthenasApp.view_movimientostock %}
+          <a href="{% url 'movimientos_lista' %}" class="{% if name == 'movimientos_lista' %}active{% endif %}">Movimientos</a>
+          <a href="{% url 'ajuste_stock' %}" class="{% if name == 'ajuste_stock' %}active{% endif %}">Ajustes</a>
+        {% endif %}
+
+        {% if perms.AthenasApp.view_clientes %}
+          <a href="{% url 'clientes_lista' %}" class="{% if name in 'clientes_lista clientes_nuevo clientes_editar' %}active{% endif %}">Clientes</a>
+        {% endif %}
+
+        {% if perms.AthenasApp.view_proveedores %}
+          <a href="{% url 'proveedores_lista' %}" class="{% if name in 'proveedores_lista proveedores_nuevo proveedores_editar' %}active{% endif %}">Proveedores</a>
+        {% endif %}
+
+        {% if user.is_superuser or user|has_group:"administrador" or user|has_group:"encargado" %}
+          <a href="{% url 'cuentas_panel' %}" class="{% if name == 'cuentas_panel' %}active{% endif %}">Cuentas</a>
+        {% endif %}
+
+        {% if perms.AthenasApp.view_productos or perms.AthenasApp.view_caja %}
+          <a href="{% url 'alertas_panel' %}" class="{% if name == 'alertas_panel' %}active{% endif %}">Alertas</a>
+        {% endif %}
+
+        {% if user.is_superuser or user|has_group:"administrador" or user|has_group:"encargado" %}
+          <a href="{% url 'reportes_panel' %}" class="{% if name == 'reportes_panel' %}active{% endif %}">Reportes</a>
+        {% endif %}
+
+        {% if user.is_superuser or user|has_group:"administrador" %}
+          <a href="{% url 'bitacora_panel' %}" class="{% if name == 'bitacora_panel' %}active{% endif %}">Bitácora</a>
+          <a href="{% url 'usuarios_lista' %}" class="{% if name in 'usuarios_lista usuarios_editar' %}active{% endif %}">Usuarios</a>
+        {% endif %}
+
+        {% if perms.AthenasApp.can_switch_negocio %}
+          <a href="{% url 'seleccionar_negocio' %}" class="{% if name == 'seleccionar_negocio' %}active{% endif %}\">Cambiar negocio</a>
+        {% endif %}
+
+        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-secondary">Salir</button>
+        </form>
+      {% endif %}
+    </nav>
+
+    <!-- INFORMACIÓN DE USUARIO Y NEGOCIO -->
     {% if user.is_authenticated %}
-      <span class="badge">Usuario: {{ user.get_username }}</span>
-      {% if user.is_superuser %}
-        <span class="badge">Superuser</span>
-      {% elif user|has_group:"administrador" %}
-        <span class="badge">Administrador</span>
-      {% elif user|has_group:"encargado" %}
-        <span class="badge">Encargado</span>
-      {% elif user|has_group:"caja" %}
-        <span class="badge">Caja</span>
-      {% elif user|has_group:"repositor" %}
-        <span class="badge">Repositor</span>
-      {% endif %}
-      {% if NEGOCIO_ACTUAL %}
-        <span class="badge">Negocio: {{ NEGOCIO_ACTUAL.detalle }}</span>
-      {% endif %}
+      <div class="navbar-badges">
+        <span class="navbar-badge">{{ user.get_username }}</span>
+        {% if user.is_superuser %}
+          <span class="navbar-badge">👑 Admin</span>
+        {% elif user|has_group:"administrador" %}
+          <span class="navbar-badge">🛡️ Adm</span>
+        {% elif user|has_group:"encargado" %}
+          <span class="navbar-badge">📋 Enc</span>
+        {% elif user|has_group:"caja" %}
+          <span class="navbar-badge">💵 Caja</span>
+        {% elif user|has_group:"repositor" %}
+          <span class="navbar-badge">📦 Rep</span>
+        {% endif %}
+        {% if NEGOCIO_ACTUAL %}
+          <span class="navbar-badge">🏢 {{ NEGOCIO_ACTUAL.detalle }}</span>
+        {% endif %}
+      </div>
     {% endif %}
   </div>
-
-  <nav class="menu">
-    {% if user.is_authenticated %}
-      <!-- INICIO -->
-      <a href="{% url 'dashboard' %}" class="{% if name == 'dashboard' %}active{% endif %}">Inicio</a>
-
-      <!-- PRODUCTOS -->
-      <a href="{% url 'productos_lista' %}"
-         class="{% if name in 'productos_lista productos_crear productos_editar' %}active{% endif %}">
-         Productos
-      </a>
-
-      <!-- VENTAS -->
-      {% if perms.AthenasApp.view_venta %}
-        <a href="{% url 'ventas_lista' %}"
-           class="{% if name in 'ventas_lista venta_nueva ventas_detalle ventas_ticket' %}active{% endif %}">
-           Ventas
-        </a>
-      {% endif %}
-
-      <!-- COMPRAS -->
-      {% if perms.AthenasApp.view_compras %}
-        <a href="{% url 'compras_lista' %}"
-           class="{% if name in 'compras_lista compras_crear compras_editar compras_detalle' %}active{% endif %}">
-           Compras
-        </a>
-      {% endif %}
-
-      <!-- CAJA -->
-      {% if perms.AthenasApp.view_caja %}
-        <a href="{% url 'caja_estado' %}" class="{% if name == 'caja_estado' %}active{% endif %}">Caja</a>
-      {% endif %}
-
-      <!-- MOVIMIENTOS / STOCK -->
-      {% if perms.AthenasApp.view_movimientostock %}
-        <a href="{% url 'movimientos_lista' %}"
-          class="{% if name == 'movimientos_lista' %}active{% endif %}">Movimientos</a>
-        <a href="{% url 'ajuste_stock' %}"
-           class="{% if name == 'ajuste_stock' %}active{% endif %}">Ajustes</a>
-      {% endif %}
-
-      <!-- CLIENTES -->
-      {% if perms.AthenasApp.view_clientes %}
-        <a href="{% url 'clientes_lista' %}"
-           class="{% if name in 'clientes_lista clientes_nuevo clientes_editar' %}active{% endif %}">
-           Clientes
-        </a>
-      {% endif %}
-
-      <!-- PROVEEDORES -->
-      {% if perms.AthenasApp.view_proveedores %}
-        <a href="{% url 'proveedores_lista' %}"
-           class="{% if name in 'proveedores_lista proveedores_nuevo proveedores_editar' %}active{% endif %}">
-           Proveedores
-        </a>
-      {% endif %}
-
-      <!-- CUENTAS CORRIENTES -->
-      {% if user.is_superuser or user|has_group:"administrador" or user|has_group:"encargado" %}
-        <a href="{% url 'cuentas_panel' %}"
-          class="{% if name == 'cuentas_panel' %}active{% endif %}">
-          Cuentas
-        </a>
-
-      {% endif %}
-
-      <!-- ALERTAS -->
-      {% if perms.AthenasApp.view_productos or perms.AthenasApp.view_caja %}
-        <a href="{% url 'alertas_panel' %}"
-           class="{% if name == 'alertas_panel' %}active{% endif %}">Alertas</a>
-      {% endif %}
-
-      <!-- REPORTES -->
-      {% if user.is_superuser or user|has_group:"administrador" or user|has_group:"encargado" %}
-        <a href="{% url 'reportes_panel' %}"
-           class="{% if name == 'reportes_panel' %}active{% endif %}">Reportes</a>
-      {% endif %}
-
-      <!-- BITÁCORA -->
-      {% if user.is_superuser or user|has_group:"administrador" %}
-        <a href="{% url 'bitacora_panel' %}"
-           class="{% if name == 'bitacora_panel' %}active{% endif %}">Bitácora</a>
-      {% endif %}
-
-      <!-- USUARIOS -->
-      {% if user.is_superuser or user|has_group:"administrador" %}
-        <a href="{% url 'usuarios_lista' %}"
-           class="{% if name in 'usuarios_lista usuarios_editar' %}active{% endif %}">Usuarios</a>
-        <a href="{% url 'admin:index' %}" target="_blank" rel="noopener">Admin Django</a>
-      {% endif %}
-
-      <!-- CAMBIO DE NEGOCIO -->
-      {% if perms.AthenasApp.can_switch_negocio %}
-        <a href="{% url 'seleccionar_negocio' %}">Cambiar negocio</a>
-      {% endif %}
-
-      <!-- LOGOUT -->
-      <form action="{% url 'logout' %}" method="post" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit"
-          style="background:none;border:none;color:var(--primary);cursor:pointer;padding:0;">
-          Salir
-        </button>
-      </form>
-    {% endif %}
-  </nav>
 </header>
 {% endwith %}

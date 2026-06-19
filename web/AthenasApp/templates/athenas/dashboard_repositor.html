@@ -1,10 +1,28 @@
 {% extends "athenas/base.html" %}
 {% block title %}Panel - Repositor{% endblock %}
 {% block content %}
-<section class="panel">
-  <h1>Panel Repositor</h1>
-  <div class="grid-cards">
-    <a class="card" href="{% url 'productos_lista' %}">Productos (ver)</a>
-  </div>
-</section>
+<div class="dashboard-section">
+  <section class="dashboard-welcome">
+    <h1>Panel del Repositor</h1>
+    <p class="subtitle">Consulta productos y stock disponible</p>
+    <div class="role-info">
+      {% if NEGOCIO_ACTUAL %}
+        <span class="navbar-badge">Negocio: <strong>{{ NEGOCIO_ACTUAL.detalle }}</strong></span>
+      {% endif %}
+      <span class="navbar-badge">Usuario: <strong>{{ request.user.get_username }}</strong></span>
+      <span class="navbar-badge">Repositor</span>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2 style="margin:0 0 24px 0;font-size:1.25rem;font-weight:700">Acceso a Productos</h2>
+    <div class="dashboard-grid">
+      <a class="dashboard-card" href="{% url 'productos_lista' %}">
+        <div class="icon">📦</div>
+        <h3>Ver Productos</h3>
+        <p class="dashboard-card-desc">Consulta catálogo completo y stock</p>
+      </a>
+    </div>
+  </section>
+</div>
 {% endblock %}

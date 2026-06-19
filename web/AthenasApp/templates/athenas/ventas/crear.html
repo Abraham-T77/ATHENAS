@@ -6,14 +6,13 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-  <h1>Nueva Venta</h1>
-
-  <div class="mensaje">
-    {% for message in messages %}
-      <p class="{{ message.tags }}">{{ message }}</p>
-    {% endfor %}
+<section class="tarjeta">
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>Nueva Venta</h1>
+    <div></div>
   </div>
+
+  {% include 'athenas/includes/_messages.html' %}
 
   <form method="post" id="form-venta" class="form-venta">
     {% csrf_token %}

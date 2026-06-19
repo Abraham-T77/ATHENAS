@@ -5,8 +5,13 @@
 <link rel="stylesheet" href="{% static 'athenas/css/ventas.css' %}">
 {% endblock %}
 {% block content %}
-<section class="panel">
-  <h1>Venta {{ venta.numero_ticket }}</h1>
+<section class="list-section">
+  <div class="page-header d-flex justify-content-between align-items-center">
+    <h1>Venta {{ venta.numero_ticket }}</h1>
+    <div class="page-actions">
+      <a class="btn-primary" href="{% url 'venta_ticket' venta.id_venta %}" target="_blank">Ticket</a>
+    </div>
+  </div>
 
   <div class="datos">
     <div><strong>Fecha:</strong> {{ venta.fecha|date:"d/m/Y H:i" }}</div>
@@ -49,9 +54,8 @@
   {% endif %}
 
 
-  <div class="acciones">
+  <div class="page-actions mt-3">
     <a class="btn" href="{% url 'ventas_lista' %}">Volver</a>
-    <a class="btn-primary" href="{% url 'venta_ticket' venta.id_venta %}" target="_blank">Ticket</a>
   </div>
 </section>
 {% endblock %}

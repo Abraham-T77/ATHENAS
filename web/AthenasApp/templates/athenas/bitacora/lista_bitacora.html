@@ -8,10 +8,12 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-  <h1>Registros de Bitácora</h1>
+<section class="list-section">
+  <div class="page-header">
+    <h1>Registros de Bitácora</h1>
+  </div>
 
-  <form method="get" class="filtros">
+  <form method="get" class="page-filters" style="margin: 1rem 0; display:flex; gap:.5rem; flex-wrap:wrap;">
     <label>Usuario:</label>
     <input type="text" name="usuario"
            placeholder="Buscar usuario..."
@@ -23,10 +25,12 @@
     <label>Hasta:</label>
     <input type="date" name="hasta" value="{{ request.GET.hasta }}">
 
-    <button type="submit" class="btn">Filtrar</button>
+    <div class="align-end" style="align-self:flex-end;">
+      <button type="submit" class="btn btn-primary">Filtrar</button>
+    </div>
   </form>
 
-  <table class="tabla">
+  <table class="table table-sm">
     <thead>
       <tr>
         <th>Fecha</th>
@@ -54,7 +58,7 @@
     </tbody>
   </table>
 
-  <div class="acciones">
+  <div class="page-actions mt-3">
     <a href="{% url 'bitacora_panel' %}" class="btn">Volver</a>
   </div>
 

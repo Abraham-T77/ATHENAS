@@ -1,18 +1,63 @@
 {% extends "athenas/base.html" %}
 {% block title %}Panel - Administrador{% endblock %}
 {% block content %}
-<section class="panel">
-  <h1>Panel Administrador</h1>
-  <div class="grid-cards">
-    <a class="card" href="{% url 'compras_lista' %}">Compras</a>
-    <a class="card" href="{% url 'productos_lista' %}">Productos</a>
-    <a class="card" href="{% url 'ventas_lista' %}">Ventas</a>
-    <a class="card" href="{% url 'usuarios_lista' %}">Usuarios</a>
-    
-    <a class="card" href="{% url 'cuentas_panel' %}">Cuentas Corrientes</a>
-    <a class="card" href="{% url 'alertas_panel' %}">Alertas del Sistema</a>
-    <a class="card" href="{% url 'reportes_panel' %}">Reportes</a>
-    <a class="card" href="{% url 'bitacora_panel' %}">Bitácora</a>
-  </div>
-</section>
+<div class="dashboard-section">
+  <section class="dashboard-welcome">
+    <h1>Bienvenido al Panel de Administración</h1>
+    <p class="subtitle">Gestiona todos los aspectos de tu negocio desde aquí</p>
+    <div class="role-info">
+      {% if NEGOCIO_ACTUAL %}
+        <span class="navbar-badge">Negocio: <strong>{{ NEGOCIO_ACTUAL.detalle }}</strong></span>
+      {% endif %}
+      <span class="navbar-badge">Usuario: <strong>{{ request.user.get_username }}</strong></span>
+      <span class="navbar-badge">Administrador</span>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2 style="margin:0 0 24px 0;font-size:1.25rem;font-weight:700">Accesos Principales</h2>
+    <div class="dashboard-grid">
+      <a class="dashboard-card" href="{% url 'ventas_lista' %}">
+        <div class="icon">💰</div>
+        <h3>Ventas</h3>
+        <p class="dashboard-card-desc">Registra y consulta ventas</p>
+      </a>
+      <a class="dashboard-card" href="{% url 'compras_lista' %}">
+        <div class="icon">📦</div>
+        <h3>Compras</h3>
+        <p class="dashboard-card-desc">Gestiona proveedores y pedidos</p>
+      </a>
+      <a class="dashboard-card" href="{% url 'productos_lista' %}">
+        <div class="icon">🏷️</div>
+        <h3>Productos</h3>
+        <p class="dashboard-card-desc">Catálogo y stock</p>
+      </a>
+      <a class="dashboard-card" href="{% url 'usuarios_lista' %}">
+        <div class="icon">👥</div>
+        <h3>Usuarios</h3>
+        <p class="dashboard-card-desc">Gestión de accesos</p>
+      </a>
+      <a class="dashboard-card" href="{% url 'cuentas_panel' %}">
+        <div class="icon">📊</div>
+        <h3>Cuentas Corrientes</h3>
+        <p class="dashboard-card-desc">Deudores y acreencias</p>
+      </a>
+      <a class="dashboard-card" href="{% url 'alertas_panel' %}">
+        <div class="icon">⚠️</div>
+        <h3>Alertas</h3>
+        <p class="dashboard-card-desc">Stock y vencimientos</p>
+      </a>
+      <a class="dashboard-card" href="{% url 'reportes_panel' %}">
+        <div class="icon">📈</div>
+        <h3>Reportes</h3>
+        <p class="dashboard-card-desc">Análisis y exportación</p>
+      </a>
+      <a class="dashboard-card" href="{% url 'bitacora_panel' %}">
+        <div class="icon">📋</div>
+        <h3>Bitácora</h3>
+        <p class="dashboard-card-desc">Auditoría del sistema</p>
+      </a>
+    </div>
+  </section>
+</div>
 {% endblock %}

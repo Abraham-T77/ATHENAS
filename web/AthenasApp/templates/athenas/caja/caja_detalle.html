@@ -4,10 +4,12 @@
 {% block title %}Detalle de caja{% endblock %}
 
 {% block content %}
-<div class="panel">
-    <h1>Detalle de caja</h1>
+<section class="list-section">
+    <div class="page-header">
+      <h1>Detalle de caja</h1>
+    </div>
 
-    <div class="grid-venta" style="margin-top:1rem;">
+    <div class="form-group-row" style="margin-top:1rem;">
         <div>
             <label>ID Caja</label>
             <input class="form-control" value="{{ caja.id_caja|default:caja.pk }}" readonly>
@@ -41,9 +43,9 @@
         </div>
     </div>
 
-    <h2 style="margin-top:2rem;">Movimientos</h2>
+    <h2 style="margin-top:2rem; padding-bottom:0.5rem; border-bottom: 1px solid #ddd;">Movimientos</h2>
 
-    <div class="table-wrap">
+    <div class="list-table">
         <table class="table table-sm">
             <thead>
                 <tr>
@@ -70,7 +72,7 @@
         </table>
     </div>
 
-    <div style="margin-top:1.5rem;">
+    <div class="page-actions mt-3">
         <a href="{% url 'caja_lista' %}" class="btn">Volver</a>
 
         {% if caja.estado == "ABIERTA" %}
@@ -79,5 +81,5 @@
             </a>
         {% endif %}
     </div>
-</div>
+</section>
 {% endblock %}

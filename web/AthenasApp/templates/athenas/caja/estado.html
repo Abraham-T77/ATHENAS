@@ -7,33 +7,35 @@
 {% endblock %}
 
 {% block content %}
-<section class="panel">
-  <h1>Estado de caja</h1>
+<section class="list-section">
+  <div class="page-header d-flex justify-content-between align-items-center">
+    <h1>Estado de caja</h1>
+    {% if caja_usuario %}
+      <span class="estado-badge ok">ABIERTO</span>
+    {% else %}
+      <span class="estado-badge off">CERRADA</span>
+    {% endif %}
+  </div>
 
   {% if caja_usuario %}
-    <p class="badge">ABIERTO</p>
-
-    <div class="grid-venta" style="margin-top:.75rem;">
-      <div>
+    <div class="form-group-row mt-4">
+      <div class="col-md-3">
         <label>Caja</label>
         <input class="form-control"
                value="Caja #{{ caja_usuario.caja.id_caja|default:caja_usuario.caja.pk }}"
                readonly>
       </div>
-
-      <div>
+      <div class="col-md-3">
         <label>Usuario</label>
         <input class="form-control" value="{{ caja_usuario.usuario.usuario }}" readonly>
       </div>
-
-      <div>
+      <div class="col-md-3">
         <label>Apertura</label>
         <input class="form-control"
                value="{{ caja_usuario.fecha_apertura|date:'d/m/Y H:i' }}"
                readonly>
       </div>
-
-      <div>
+      <div class="col-md-3">
         <label>Saldo inicial (apertura)</label>
         <input class="form-control"
                value="${{ caja_usuario.saldo_inicial|floatformat:2 }}"
@@ -41,19 +43,17 @@
       </div>
     </div>
 
-    <div class="acciones" style="margin-top:1rem;">
+    <div class="page-actions mt-4 d-flex gap-2">
       {% if caja_usuario.estado == "ABIERTA" and caja_usuario.caja.estado == "ABIERTA" %}
-        <a class="btn-primary" href="{% url 'caja_cierre' caja_usuario.caja.pk %}">
-          Cerrar caja
-        </a>
+        <a class="btn btn-outline-danger" href="{% url 'caja_cierre' caja_usuario.caja.pk %}">Cerrar caja</a>
       {% endif %}
-      <a class="btn" href="{% url 'caja_arqueo' %}">Arqueo</a>
-      <a class="btn" href="{% url 'caja_lista' %}">Volver a la lista</a>
+      <a class="btn btn" href="{% url 'caja_arqueo' %}">Arqueo</a>
+      <a class="btn btn" href="{% url 'caja_lista' %}">Volver a la lista</a>
     </div>
 
     {% if movimientos %}
-      <h2 style="margin-top:1.5rem;">Movimientos recientes</h2>
-      <div class="table-wrap">
+      <h2 class="mt-4 mb-3" style="padding-bottom:0.5rem; border-bottom: 1px solid #ddd;">Movimientos recientes</h2>
+      <div class="list-table">
         <table class="table table-sm">
           <thead>
             <tr>
@@ -82,10 +82,11 @@
     {% endif %}
 
   {% else %}
-    <p class="badge">CERRADA</p>
     <p>No tenés caja abierta actualmente.</p>
-    <a class="btn btn-primary" href="{% url 'caja_apertura' %}">Abrir caja</a>
-    <a class="btn" href="{% url 'caja_lista' %}">Ver listado de cajas</a>
+    <div class="page-actions mt-3">
+      <a class="btn btn-primary" href="{% url 'caja_apertura' %}">Abrir caja</a>
+      <a class="btn btn" href="{% url 'caja_lista' %}">Ver listado de cajas</a>
+    </div>
   {% endif %}
 </section>
 {% endblock %}

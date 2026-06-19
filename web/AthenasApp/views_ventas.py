@@ -16,10 +16,10 @@ from .models import (
 )
 from .decorators import requiere_negocio
 
-FORMA_PAGO_EFECTIVO = "Efectivo"
-FORMA_PAGO_TARJETA = "Tarjeta"
-FORMA_PAGO_TRANSFERENCIA = "Transferencia"
-FORMA_PAGO_MIXTO = "Mixto"
+FORMA_PAGO_EFECTIVO = Venta.FP_EFECTIVO
+FORMA_PAGO_TARJETA = Venta.FP_TARJETA
+FORMA_PAGO_TRANSFERENCIA = Venta.FP_TRANSFERENCIA
+FORMA_PAGO_MIXTO = Venta.FP_MIXTO
 
 ESTADO_BORRADOR = "BORRADOR"
 ESTADO_CONFIRMADA = "CONFIRMADA"
@@ -76,6 +76,8 @@ def venta_nueva(request):
         descs    = request.POST.getlist('desc_item_pct[]')  # opcional
 
         forma_pago = request.POST.get('forma_pago') or FORMA_PAGO_EFECTIVO
+        if forma_pago not in [FORMA_PAGO_EFECTIVO, FORMA_PAGO_TARJETA, FORMA_PAGO_TRANSFERENCIA, FORMA_PAGO_MIXTO]:
+            forma_pago = FORMA_PAGO_EFECTIVO
         cliente_id = request.POST.get('cliente_id') or None
         desc_global_pct = request.POST.get('descuento_global_pct') or ""
 
@@ -242,7 +244,7 @@ def venta_nueva(request):
                     except Exception:
                         monto = 0
                     if monto > 0:
-                        metodo = key.replace('pago_', '').capitalize()
+                        metodo = key.replace('pago_', '').upper()
                         partes.append((metodo, monto))
 
                 if not partes:

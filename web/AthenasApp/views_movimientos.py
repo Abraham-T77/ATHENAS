@@ -22,7 +22,7 @@ from .decorators import requiere_negocio
 @requiere_negocio
 @permission_required("AthenasApp.view_movimientostock", raise_exception=True)
 def movimientos_lista(request):
-    neg_id = request.session.get("NEGOCIO_ID")
+    neg_id = _negocio_id_from_request(request)
 
     q = request.GET.get("q", "")
     tipo = request.GET.get("tipo", "")
@@ -70,14 +70,14 @@ def movimientos_lista(request):
 @requiere_negocio
 @permission_required("AthenasApp.view_movimientostock", raise_exception=True)
 def ajustes_list(request):
-    neg_id = request.session.get("NEGOCIO_ID")
+    neg_id = _negocio_id_from_request(request)
 
     q = request.GET.get("q", "")
     tipo = request.GET.get("tipo", "")
 
     movimientos = MovimientoStock.objects.filter(
         negocio_id=neg_id,
-        tipo__in=["ENTRADA", "SALIDA", "AJUSTE"]
+        tipo__in=["ENTRADA", "SALIDA"]
     )
 
     # --- BÚSQUEDA GENERAL ---

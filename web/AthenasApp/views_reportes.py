@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils import timezone
 from django.db.models import Sum, F, ExpressionWrapper, FloatField
+from .utils import _negocio_id_from_request
 from openpyxl import Workbook
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -49,33 +50,36 @@ def reportes_panel(request):
     hoy = timezone.now()
     mes_actual = hoy.month
     anio_actual = hoy.year
+    neg_id = _negocio_id_from_request(request)
 
     ventas_mes = Venta.objects.filter(
+        negocio_id=neg_id,
         fecha__month=mes_actual,
         fecha__year=anio_actual,
         estado=Venta.ESTADO_CONFIRMADA
     ).aggregate(total=Sum('total_neto'))['total'] or 0
 
     compras_mes = Compras.objects.filter(
+        negocio_id=neg_id,
         fecha__month=mes_actual,
         fecha__year=anio_actual,
         estado=Compras.ESTADO_CONFIRMADA
     ).aggregate(total=Sum('total'))['total'] or 0
 
-    productos_activos = Productos.objects.filter(activo=True).count()
-    clientes_activos = Clientes.objects.filter(activo=True).count()
+    productos_activos = Productos.objects.filter(activo=True, negocio_id=neg_id).count()
+    clientes_activos = Clientes.objects.filter(activo=True, negocio_id=neg_id).count()
 
     resumen_ventas = {
-        "total": Venta.objects.count(),
+        "total": Venta.objects.filter(negocio_id=neg_id).count(),
         "monto_total": ventas_mes
     }
     resumen_compras = {
-        "total": Compras.objects.count(),
+        "total": Compras.objects.filter(negocio_id=neg_id).count(),
         "monto_total": compras_mes
     }
     resumen_stock = {
         "productos": productos_activos,
-        "valor_total": Productos.objects.aggregate(
+        "valor_total": Productos.objects.filter(negocio_id=neg_id).aggregate(
             total=Sum(ExpressionWrapper(F('stock_actual') * F('precio_venta'), output_field=FloatField()))
         )['total'] or 0
     }
@@ -99,7 +103,8 @@ def reportes_ventas(request):
     desde = request.GET.get("desde")
     hasta = request.GET.get("hasta")
 
-    ventas = Venta.objects.all().order_by("-fecha")
+    neg_id = _negocio_id_from_request(request)
+    ventas = Venta.objects.filter(negocio_id=neg_id).order_by("-fecha")
 
     if desde:
         ventas = ventas.filter(fecha__gte=desde)
@@ -127,11 +132,13 @@ def reportes_ventas(request):
 
 @login_required
 @requiere_negocio
+@permission_required('AthenasApp.view_venta', raise_exception=True)
 def exportar_reporte_ventas_pdf(request):
     desde = request.GET.get("desde")
     hasta = request.GET.get("hasta")
+    neg_id = _negocio_id_from_request(request)
 
-    ventas = Venta.objects.all().order_by("-fecha")
+    ventas = Venta.objects.filter(negocio_id=neg_id).order_by("-fecha")
     if desde: ventas = ventas.filter(fecha__gte=desde)
     if hasta: ventas = ventas.filter(fecha__lte=hasta)
 
@@ -160,11 +167,13 @@ def exportar_reporte_ventas_pdf(request):
 
 @login_required
 @requiere_negocio
+@permission_required('AthenasApp.view_venta', raise_exception=True)
 def exportar_reporte_ventas_excel(request):
     desde = request.GET.get("desde")
     hasta = request.GET.get("hasta")
+    neg_id = _negocio_id_from_request(request)
 
-    ventas = Venta.objects.all().order_by("-fecha")
+    ventas = Venta.objects.filter(negocio_id=neg_id).order_by("-fecha")
     if desde: ventas = ventas.filter(fecha__gte=desde)
     if hasta: ventas = ventas.filter(fecha__lte=hasta)
 
@@ -199,8 +208,9 @@ def exportar_reporte_ventas_excel(request):
 def reportes_compras(request):
     desde = request.GET.get("desde")
     hasta = request.GET.get("hasta")
+    neg_id = _negocio_id_from_request(request)
 
-    compras = Compras.objects.all().order_by("-fecha")
+    compras = Compras.objects.filter(negocio_id=neg_id).order_by("-fecha")
     if desde: compras = compras.filter(fecha__gte=desde)
     if hasta: compras = compras.filter(fecha__lte=hasta)
 
@@ -224,11 +234,13 @@ def reportes_compras(request):
 
 @login_required
 @requiere_negocio
+@permission_required('AthenasApp.view_compras', raise_exception=True)
 def exportar_reporte_compras_pdf(request):
     desde = request.GET.get("desde")
     hasta = request.GET.get("hasta")
+    neg_id = _negocio_id_from_request(request)
 
-    compras = Compras.objects.all().order_by("-fecha")
+    compras = Compras.objects.filter(negocio_id=neg_id).order_by("-fecha")
     if desde: compras = compras.filter(fecha__gte=desde)
     if hasta: compras = compras.filter(fecha__lte=hasta)
 
@@ -256,11 +268,13 @@ def exportar_reporte_compras_pdf(request):
 
 @login_required
 @requiere_negocio
+@permission_required('AthenasApp.view_compras', raise_exception=True)
 def exportar_reporte_compras_excel(request):
     desde = request.GET.get("desde")
     hasta = request.GET.get("hasta")
+    neg_id = _negocio_id_from_request(request)
 
-    compras = Compras.objects.all().order_by("-fecha")
+    compras = Compras.objects.filter(negocio_id=neg_id).order_by("-fecha")
     if desde: compras = compras.filter(fecha__gte=desde)
     if hasta: compras = compras.filter(fecha__lte=hasta)
 
@@ -293,7 +307,8 @@ def exportar_reporte_compras_excel(request):
 @permission_required('AthenasApp.view_productos', raise_exception=True)
 def reportes_stock(request):
     buscar = request.GET.get("buscar")
-    productos = Productos.objects.filter(activo=True)
+    neg_id = _negocio_id_from_request(request)
+    productos = Productos.objects.filter(activo=True, negocio_id=neg_id)
 
     if buscar:
         productos = productos.filter(descripcion__icontains=buscar)
@@ -306,7 +321,6 @@ def reportes_stock(request):
         )
     )
 
-    # === Gráfico ===
     if productos.exists():
         nombres = [p.descripcion for p in productos]
         stocks = [p.stock_actual for p in productos]
@@ -327,9 +341,11 @@ def reportes_stock(request):
 
 @login_required
 @requiere_negocio
+@permission_required('AthenasApp.view_productos', raise_exception=True)
 def exportar_reporte_stock_pdf(request):
     buscar = request.GET.get("buscar")
-    productos = Productos.objects.filter(activo=True)
+    neg_id = _negocio_id_from_request(request)
+    productos = Productos.objects.filter(activo=True, negocio_id=neg_id)
 
     if buscar:
         productos = productos.filter(descripcion__icontains=buscar)
@@ -368,9 +384,11 @@ def exportar_reporte_stock_pdf(request):
 
 @login_required
 @requiere_negocio
+@permission_required('AthenasApp.view_productos', raise_exception=True)
 def exportar_reporte_stock_excel(request):
     buscar = request.GET.get("buscar")
-    productos = Productos.objects.filter(activo=True)
+    neg_id = _negocio_id_from_request(request)
+    productos = Productos.objects.filter(activo=True, negocio_id=neg_id)
 
     if buscar:
         productos = productos.filter(descripcion__icontains=buscar)

@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from AthenasApp.models import Productos, Clientes, BitacoraSistema
 from AthenasApp.decorators import requiere_negocio
+from AthenasApp.utils import _negocio_id_from_request
 
 
 # =========================================================
@@ -30,7 +31,7 @@ def alertas_panel(request):
     - eventos del sistema
     """
     hoy = timezone.now().date()
-    neg_id = request.session.get("NEGOCIO_ID")
+    neg_id = _negocio_id_from_request(request)
 
     # Base de productos del negocio
     productos_qs = Productos.objects.filter(activo=True)
@@ -83,7 +84,7 @@ def alertas_productos_vencidos(request):
     - próximos a vencer en 15 días
     """
     hoy = timezone.now().date()
-    neg_id = request.session.get("NEGOCIO_ID")
+    neg_id = _negocio_id_from_request(request)
 
     productos_qs = Productos.objects.filter(activo=True)
     if neg_id:
@@ -124,7 +125,7 @@ def alertas_stock_minimo(request):
     """
     Lista de productos con stock bajo o sin stock.
     """
-    neg_id = request.session.get("NEGOCIO_ID")
+    neg_id = _negocio_id_from_request(request)
 
     productos = Productos.objects.filter(
         activo=True,
@@ -153,7 +154,7 @@ def alertas_clientes_morosos(request):
     """
     Lista de clientes con saldo deudor en cuenta corriente.
     """
-    neg_id = request.session.get("NEGOCIO_ID")
+    neg_id = _negocio_id_from_request(request)
 
     clientes = Clientes.objects.filter(
         activo=True,

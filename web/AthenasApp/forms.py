@@ -367,7 +367,7 @@ class ProductoForm(forms.ModelForm):
             "categoria":         forms.Select(attrs={"class": "form-select"}),
             "marca":             forms.Select(attrs={"class": "form-select"}),
             "unidad":            forms.Select(attrs={"class": "form-select"}),
-            "codigo_barra":      forms.TextInput(attrs={"class": "form-control"}),
+            "codigo_barra":      forms.TextInput(attrs={"class": "form-control", "autocomplete": "off", "data-prevent-enter-submit": "true"}),
             "sku":               forms.TextInput(attrs={"class": "form-control"}),
             "precio_compra":     forms.NumberInput(attrs={"class": "form-control", "step": "0.01", "min": "0"}),
             "margen_ganancia":   forms.NumberInput(attrs={"class": "form-control", "step": "0.01", "min": "0", "max": "100"}),

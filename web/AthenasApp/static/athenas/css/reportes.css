@@ -159,3 +159,75 @@ section.reportes-panel {
 .critico {
     background: rgba(255, 0, 0, 0.15);
 }
+
+/* --- Ajustes visuales transversales del modulo --- */
+.reporte-card,
+.chart-container {
+    background: var(--surface-2);
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 8px 22px rgba(0,0,0,.22);
+}
+
+.report-header {
+    border-bottom-color: var(--border);
+    padding-bottom: .75rem;
+}
+
+.btn,
+.btn-sm,
+.btn-secondary,
+.btn-primary {
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.btn {
+    background: #18202a;
+    border: 1px solid var(--border);
+}
+
+.btn:hover {
+    background: #202a38;
+    color: var(--text);
+}
+
+.btn-primary {
+    color: #06231f;
+}
+
+.report-table,
+.tabla {
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.report-table th,
+.report-table td,
+.tabla th,
+.tabla td {
+    border-color: var(--border);
+}
+
+.report-table th,
+.tabla th {
+    background: var(--surface-2);
+    color: #99f6e4;
+}
+
+.chart {
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .acciones {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .acciones .btn,
+    .acciones .btn-sm,
+    .acciones .btn-secondary,
+    .acciones .btn-primary {
+        width: 100%;
+    }
+}

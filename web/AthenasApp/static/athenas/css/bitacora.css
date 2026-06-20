@@ -95,3 +95,67 @@ section.panel {
     text-decoration: none;
     font-weight: 600;
 }
+
+/* --- Ajustes visuales transversales del modulo --- */
+.bitacora-card {
+    background: var(--surface-2);
+    border: 1px solid rgba(255,255,255,.08);
+    border-left: 5px solid var(--primary);
+    box-shadow: 0 8px 22px rgba(0,0,0,.22);
+}
+
+.filtros {
+    flex-wrap: wrap;
+}
+
+.filtros input,
+.filtros select {
+    background: #0f141c;
+    color: var(--text);
+    border-color: var(--border);
+}
+
+.tabla {
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.btn,
+.btn-sm,
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.btn {
+    border: 1px solid var(--border);
+    background: #18202a;
+    color: var(--text);
+}
+
+.btn:hover {
+    background: #202a38;
+    color: var(--text);
+    opacity: 1;
+}
+
+.btn-primary {
+    color: #06231f;
+}
+
+@media (max-width: 768px) {
+    .filtros,
+    .acciones {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .acciones .btn,
+    .acciones .btn-sm,
+    .acciones .btn-primary {
+        width: 100%;
+    }
+}

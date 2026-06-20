@@ -1,0 +1,121 @@
+/* =========================================================
+   MODULO: CUENTAS CORRIENTES
+   ========================================================= */
+
+.cuentas-panel,
+.panel{
+  color:var(--text);
+}
+
+.intro{
+  margin:1rem 0 1.25rem;
+}
+
+.acciones{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.75rem;
+  align-items:center;
+  margin:1rem 0;
+}
+
+.datos{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:.75rem;
+  background:rgba(15,20,28,.72);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:1rem;
+  margin:1rem 0 1.25rem;
+}
+
+.datos p{
+  margin:0;
+  color:var(--muted);
+}
+
+.datos strong{
+  color:var(--text);
+}
+
+.table,
+.tabla,
+.table-cuentas{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--card);
+}
+
+.table th,
+.table td,
+.tabla th,
+.tabla td,
+.table-cuentas th,
+.table-cuentas td{
+  padding:.7rem .85rem;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+}
+
+.table thead th,
+.tabla thead th,
+.table-cuentas thead th{
+  background:var(--surface-2);
+  color:#99f6e4;
+}
+
+.deudor{
+  background:rgba(245,158,11,.08);
+}
+
+.cuenta-card{
+  background:var(--surface-2);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:1rem;
+  margin-bottom:1rem;
+}
+
+.cuenta-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  border-bottom:1px solid var(--border);
+  padding-bottom:.65rem;
+  margin-bottom:.85rem;
+}
+
+.cuenta-saldo{
+  color:var(--accent);
+  font-size:1.2rem;
+  font-weight:700;
+}
+
+.btn-accion{
+  background:var(--primary);
+  color:#06231f;
+  border:0;
+  border-radius:8px;
+  padding:.55rem .9rem;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.r{
+  text-align:right;
+}
+
+@media (max-width:768px){
+  .acciones{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .acciones .btn,
+  .acciones .btn-primary,
+  .acciones a{
+    width:100%;
+  }
+}

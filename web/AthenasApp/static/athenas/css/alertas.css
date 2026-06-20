@@ -130,3 +130,65 @@ section.panel {
 .acciones {
     margin-top: 2.5rem !important;
 }
+
+/* --- Ajustes visuales transversales del modulo --- */
+.alertas-tabs {
+    flex-wrap: wrap;
+    gap: .65rem;
+}
+
+.alertas-tabs a {
+    border-radius: 8px;
+    background: rgba(15,20,28,.72);
+}
+
+.alertas-tabs a:hover,
+.alertas-tabs a.active {
+    color: #06231f;
+}
+
+.alerta-card,
+.resumen article {
+    background: var(--surface-2);
+    border: 1px solid rgba(255,255,255,.08);
+    border-left: 5px solid var(--primary);
+    box-shadow: 0 8px 22px rgba(0,0,0,.22);
+}
+
+.tabla {
+    border-collapse: collapse;
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.tabla thead th,
+.tabla tbody tr td {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.estado-badge.ok {
+    background: #123b2a;
+    color: #a7f3d0;
+}
+
+.estado-badge.alerta {
+    background: #3f3b1a;
+    color: #fcd34d;
+}
+
+.estado-badge.off {
+    background: #4b1e1e;
+    color: #fca5a5;
+}
+
+@media (max-width: 768px) {
+    .alertas-tabs {
+        flex-direction: column;
+    }
+
+    .alertas-tabs a {
+        width: 100%;
+    }
+}

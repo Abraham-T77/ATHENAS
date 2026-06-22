@@ -38,7 +38,11 @@
         </div>
 
         <div>
-            <label>Saldo final</label>
+            <label>Saldo calculado</label>
+            <input class="form-control" value="${{ saldo_calculado|floatformat:2 }}" readonly>
+        </div>
+        <div>
+            <label>Saldo final guardado</label>
             <input class="form-control" value="${{ caja.saldo_final|floatformat:2 }}" readonly>
         </div>
     </div>
@@ -59,8 +63,12 @@
                 {% for mov in movimientos %}
                     <tr>
                         <td>{{ mov.fecha|date:"d/m/Y H:i" }}</td>
-                        <td>{{ mov.tipo }}</td>
-                        <td>{{ mov.concepto }}</td>
+                        <td>
+                            <span class="estado-badge {% if mov.tipo == 'INGRESO' %}ok{% elif mov.tipo == 'EGRESO' %}off{% endif %}">
+                                {{ mov.tipo }}
+                            </span>
+                        </td>
+                        <td>{{ mov.motivo }}</td>
                         <td class="text-end">${{ mov.monto|floatformat:2 }}</td>
                     </tr>
                 {% empty %}

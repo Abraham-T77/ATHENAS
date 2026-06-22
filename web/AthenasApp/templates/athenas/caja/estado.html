@@ -41,6 +41,12 @@
                value="${{ caja_usuario.saldo_inicial|floatformat:2 }}"
                readonly>
       </div>
+      <div class="col-md-3">
+        <label>Saldo calculado actual</label>
+        <input class="form-control"
+               value="${{ saldo_calculado|floatformat:2 }}"
+               readonly>
+      </div>
     </div>
 
     <div class="page-actions mt-4 d-flex gap-2">
@@ -67,8 +73,12 @@
             {% for m in movimientos %}
               <tr>
                 <td>{{ m.fecha|date:"d/m/Y H:i" }}</td>
-                <td>{{ m.tipo }}</td>
-                <td>{{ m.concepto }}</td>
+                <td>
+                  <span class="estado-badge {% if m.tipo == 'INGRESO' %}ok{% elif m.tipo == 'EGRESO' %}off{% endif %}">
+                    {{ m.tipo }}
+                  </span>
+                </td>
+                <td>{{ m.motivo }}</td>
                 <td class="r">${{ m.monto|floatformat:2 }}</td>
               </tr>
             {% empty %}

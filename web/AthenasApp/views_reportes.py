@@ -70,7 +70,7 @@ def reportes_panel(request):
     clientes_activos = Clientes.objects.filter(activo=True, negocio_id=neg_id).count()
 
     resumen_ventas = {
-        "total": Venta.objects.filter(negocio_id=neg_id).count(),
+        "total": Venta.objects.filter(negocio_id=neg_id, estado=Venta.ESTADO_CONFIRMADA).count(),
         "monto_total": ventas_mes
     }
     resumen_compras = {
@@ -96,20 +96,31 @@ def reportes_panel(request):
 # =========================================================
 # REPORTE DE VENTAS
 # =========================================================
-@login_required
-@requiere_negocio
-@permission_required('AthenasApp.view_venta', raise_exception=True)
-def reportes_ventas(request):
+def _ventas_reporte_queryset(request):
     desde = request.GET.get("desde")
     hasta = request.GET.get("hasta")
-
+    estado = request.GET.get("estado") or Venta.ESTADO_CONFIRMADA
     neg_id = _negocio_id_from_request(request)
-    ventas = Venta.objects.filter(negocio_id=neg_id).order_by("-fecha")
+    estados_validos = {valor for valor, _ in Venta.ESTADOS}
+    if estado != "TODOS" and estado not in estados_validos:
+        estado = Venta.ESTADO_CONFIRMADA
 
+    ventas = Venta.objects.filter(negocio_id=neg_id).order_by("-fecha")
+    if estado != "TODOS":
+        ventas = ventas.filter(estado=estado)
     if desde:
         ventas = ventas.filter(fecha__gte=desde)
     if hasta:
         ventas = ventas.filter(fecha__lte=hasta)
+
+    return ventas, estado
+
+
+@login_required
+@requiere_negocio
+@permission_required('AthenasApp.view_venta', raise_exception=True)
+def reportes_ventas(request):
+    ventas, estado = _ventas_reporte_queryset(request)
 
     # === Gráfico ===
     if ventas.exists():
@@ -123,6 +134,8 @@ def reportes_ventas(request):
         "ventas": ventas,
         "titulo": "Reporte de Ventas",
         "grafico": grafico_ventas,
+        "estado": estado,
+        "estados": Venta.ESTADOS,
     })
 
 
@@ -134,26 +147,20 @@ def reportes_ventas(request):
 @requiere_negocio
 @permission_required('AthenasApp.view_venta', raise_exception=True)
 def exportar_reporte_ventas_pdf(request):
-    desde = request.GET.get("desde")
-    hasta = request.GET.get("hasta")
-    neg_id = _negocio_id_from_request(request)
-
-    ventas = Venta.objects.filter(negocio_id=neg_id).order_by("-fecha")
-    if desde: ventas = ventas.filter(fecha__gte=desde)
-    if hasta: ventas = ventas.filter(fecha__lte=hasta)
+    ventas, estado = _ventas_reporte_queryset(request)
 
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = 'attachment; filename=\"reporte_ventas.pdf\"'
 
     p = canvas.Canvas(response, pagesize=letter)
     p.setFont("Helvetica-Bold", 14)
-    p.drawString(50, 750, "Reporte de Ventas")
+    p.drawString(50, 750, f"Reporte de Ventas - Estado: {estado}")
 
     p.setFont("Helvetica", 10)
     y = 720
 
     for v in ventas:
-        p.drawString(50, y, f"{v.fecha.strftime('%d/%m/%Y')} — {v.numero_ticket} — ${v.total_neto}")
+        p.drawString(50, y, f"{v.fecha.strftime('%d/%m/%Y')} - {v.numero_ticket} - {v.estado} - ${v.total_neto}")
         y -= 18
         if y < 50:
             p.showPage()
@@ -169,17 +176,13 @@ def exportar_reporte_ventas_pdf(request):
 @requiere_negocio
 @permission_required('AthenasApp.view_venta', raise_exception=True)
 def exportar_reporte_ventas_excel(request):
-    desde = request.GET.get("desde")
-    hasta = request.GET.get("hasta")
-    neg_id = _negocio_id_from_request(request)
-
-    ventas = Venta.objects.filter(negocio_id=neg_id).order_by("-fecha")
-    if desde: ventas = ventas.filter(fecha__gte=desde)
-    if hasta: ventas = ventas.filter(fecha__lte=hasta)
+    ventas, estado = _ventas_reporte_queryset(request)
 
     wb = Workbook()
     ws = wb.active
     ws.title = "Ventas"
+    ws.append([f"Estado filtrado: {estado}"])
+    ws.append([])
 
     ws.append(["Fecha", "Número", "Cliente", "Forma de Pago", "Total", "Estado"])
 

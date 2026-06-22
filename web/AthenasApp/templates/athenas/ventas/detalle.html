@@ -16,9 +16,18 @@
   <div class="datos">
     <div><strong>Fecha:</strong> {{ venta.fecha|date:"d/m/Y H:i" }}</div>
     <div><strong>Forma de pago:</strong> {{ venta.forma_pago }}</div>
-    <div><strong>Estado:</strong> {{ venta.estado }}</div>
+    <div>
+      <strong>Estado:</strong>
+      <span class="venta-status-badge venta-status-{{ venta.estado|lower }}">{{ venta.get_estado_display }}</span>
+    </div>
     <div><strong>Total:</strong> ${{ venta.total_neto }}</div>
   </div>
+
+  {% if venta.estado == 'ANULADA' %}
+    <div class="venta-alert venta-alert-danger">
+      Venta anulada. No representa un ingreso activo y su movimiento de caja debe figurar como reversa.
+    </div>
+  {% endif %}
 
   <table class="tabla">
     <thead><tr><th>Producto</th><th>Cant</th><th>PU</th><th>Desc%</th><th>Subtotal</th></tr></thead>

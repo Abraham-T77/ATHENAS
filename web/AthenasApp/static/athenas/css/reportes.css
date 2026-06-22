@@ -147,6 +147,45 @@ section.reportes-panel {
     margin: 0 auto;
 }
 
+.report-note {
+    color: var(--text-muted);
+    margin: .25rem 0 1rem;
+}
+
+.filtros select {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    min-height: 38px;
+    padding: .45rem .65rem;
+}
+
+.report-status {
+    border-radius: 999px;
+    display: inline-flex;
+    font-size: .78rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: .35rem .6rem;
+    text-transform: uppercase;
+}
+
+.report-status-confirmada {
+    background: rgba(16, 185, 129, .16);
+    color: #6ee7b7;
+}
+
+.report-status-anulada {
+    background: rgba(239, 68, 68, .18);
+    color: #fca5a5;
+}
+
+.report-status-borrador {
+    background: rgba(148, 163, 184, .18);
+    color: #cbd5e1;
+}
+
 /* =========================================================
    Tablas dentro de reportes
    ========================================================= */

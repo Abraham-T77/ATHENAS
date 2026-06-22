@@ -10,6 +10,9 @@
 {% block content %}
 <section class="panel">
     <h1>Reporte de Ventas</h1>
+    <p class="report-note">
+        Por defecto se muestran ventas confirmadas. Las anuladas quedan disponibles para auditoria, pero no se computan como ingreso activo.
+    </p>
 
     {% if grafico %}
     <div class="chart-container">
@@ -23,6 +26,14 @@
 
         <label>Hasta:</label>
         <input type="date" name="hasta" value="{{ request.GET.hasta }}">
+
+        <label>Estado:</label>
+        <select name="estado">
+            <option value="TODOS" {% if estado == "TODOS" %}selected{% endif %}>Todas</option>
+            {% for value, label in estados %}
+                <option value="{{ value }}" {% if estado == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
 
         <button type="submit" class="btn">Filtrar</button>
     </form>
@@ -40,13 +51,13 @@
         </thead>
         <tbody>
             {% for v in ventas %}
-            <tr>
+            <tr class="{% if v.estado == 'ANULADA' %}critico{% endif %}">
                 <td>{{ v.fecha|date:"d/m/Y" }}</td>
                 <td>{{ v.numero_ticket }}</td>
                 <td>{{ v.cliente.nombre|default:"—" }}</td>
                 <td>{{ v.forma_pago }}</td>
                 <td>${{ v.total_neto }}</td>
-                <td>{{ v.estado }}</td>
+                <td><span class="report-status report-status-{{ v.estado|lower }}">{{ v.get_estado_display }}</span></td>
             </tr>
             {% empty %}
             <tr><td colspan="6">No se encontraron ventas.</td></tr>

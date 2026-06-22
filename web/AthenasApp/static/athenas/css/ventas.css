@@ -340,6 +340,19 @@ input[readonly]{
   border-color: #703232;
 }
 
+.venta-alert {
+  border-radius: 8px;
+  font-weight: 600;
+  margin: 1rem 0;
+  padding: .85rem 1rem;
+}
+
+.venta-alert-danger {
+  background: rgba(239, 68, 68, .12);
+  border: 1px solid rgba(239, 68, 68, .35);
+  color: #fecaca;
+}
+
 .venta-pay-badge {
   color: #dbeafe;
   background: #172033;

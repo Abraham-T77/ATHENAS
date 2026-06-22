@@ -143,6 +143,7 @@ def caja_detalle(request, pk):
     ctx = {
         "caja": caja,
         "movimientos": movimientos,
+        "saldo_calculado": caja.calcular_saldo(),
     }
     return render(request, "athenas/caja/caja_detalle.html", ctx)
 
@@ -179,6 +180,7 @@ def caja_estado(request):
         "caja_usuario": caja_usuario,
         "caja_activa": caja_usuario,   # 👈 alias para que el template no rompa
         "movimientos": movimientos,
+        "saldo_calculado": caja_usuario.caja.calcular_saldo(),
     }
     return render(request, "athenas/caja/estado.html", ctx)
 

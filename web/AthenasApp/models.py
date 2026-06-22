@@ -456,11 +456,21 @@ class Venta(models.Model):
                 referencia=str(self.pk)
             )
             for ingreso in ingresos_venta:
+                reversa_existente = MovimientoCaja.objects.filter(
+                    caja_usuario=ingreso.caja_usuario,
+                    tipo="EGRESO",
+                    referencia=str(self.pk),
+                    monto=ingreso.monto,
+                    motivo__icontains="Anulacion venta",
+                ).exists()
+                if reversa_existente:
+                    continue
+
                 MovimientoCaja.registrar_automatico(
                     caja_usuario=ingreso.caja_usuario,
                     tipo="EGRESO",
                     monto=ingreso.monto,
-                    motivo=f"Reversión anulación venta {self.numero_ticket}",
+                    motivo=f"Anulacion venta {self.numero_ticket}",
                     referencia=str(self.pk)
                 )
 

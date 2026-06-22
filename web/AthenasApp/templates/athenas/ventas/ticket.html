@@ -6,32 +6,66 @@
 {% endblock %}
 
 {% block content %}
-<section class="list-section ticket">
-  <div class="page-header d-flex justify-content-between align-items-center">
-    <h2>Despensa Athenas</h2>
-    <div class="page-actions">
-      <button class="btn" onclick="window.print()">Imprimir</button>
+<section class="ticket ticket-print">
+  <header class="ticket-header">
+    <div>
+      <h2>{{ venta.negocio.detalle|default:"Athenas" }}</h2>
+      <p>Comprobante de venta</p>
     </div>
-  </div>
-  <div>Ticket: {{ venta.numero_ticket }}</div>
-  <div>Fecha: {{ venta.fecha|date:"d/m/Y H:i" }}</div>
-  <hr>
-  <table>
-    <thead><tr><th>Desc</th><th class="r">Cant</th><th class="r">PU</th><th class="r">Sub</th></tr></thead>
+    <button class="btn ticket-print-btn" type="button" onclick="window.print()">Imprimir</button>
+  </header>
+
+  {% if venta.estado == "ANULADA" %}
+    <div class="ticket-cancelled">VENTA ANULADA</div>
+  {% endif %}
+
+  <section class="ticket-meta">
+    <div><span>Ticket</span><strong>{{ venta.numero_ticket }}</strong></div>
+    <div><span>Fecha</span><strong>{{ venta.fecha|date:"d/m/Y H:i" }}</strong></div>
+    <div><span>Cliente</span><strong>{% if venta.cliente %}{{ venta.cliente.nombre }}{% else %}Consumidor Final{% endif %}</strong></div>
+    <div><span>Forma de pago</span><strong>{{ venta.get_forma_pago_display }}</strong></div>
+  </section>
+
+  <table class="ticket-table">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th class="r">Cant</th>
+        <th class="r">PU</th>
+        <th class="r">Desc</th>
+        <th class="r">Subtotal</th>
+      </tr>
+    </thead>
     <tbody>
       {% for d in detalles %}
       <tr>
         <td>{{ d.nombre_producto }}</td>
         <td class="r">{{ d.cantidad }}</td>
-        <td class="r">{{ d.precio_unitario }}</td>
-        <td class="r">{{ d.subtotal }}</td>
+        <td class="r">${{ d.precio_unitario|floatformat:2 }}</td>
+        <td class="r">{% if d.descuento_item_pct %}{{ d.descuento_item_pct|floatformat:2 }}%{% else %}-{% endif %}</td>
+        <td class="r">${{ d.subtotal|floatformat:2 }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-  <hr>
-  <div class="r">Total: ${{ venta.total_neto }}</div>
-  <p>¡Gracias por su compra!</p>
 
+  <section class="ticket-summary">
+    <div><span>Subtotal</span><strong>${{ venta.total_bruto|floatformat:2 }}</strong></div>
+    <div><span>Descuento global</span><strong>{% if venta.descuento_global_pct %}{{ venta.descuento_global_pct|floatformat:2 }}%{% else %}-{% endif %}</strong></div>
+    <div class="ticket-total"><span>Total</span><strong>${{ venta.total_neto|floatformat:2 }}</strong></div>
+  </section>
+
+  {% if pagos %}
+  <section class="ticket-payments">
+    <h3>Pagos</h3>
+    {% for pago in pagos %}
+      <div><span>{{ pago.get_metodo_display }}</span><strong>${{ pago.monto|floatformat:2 }}</strong></div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <footer class="ticket-footer">
+    <p>Gracias por su compra.</p>
+  </footer>
 </section>
 {% endblock %}

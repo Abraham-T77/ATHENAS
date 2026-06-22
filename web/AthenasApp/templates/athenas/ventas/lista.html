@@ -14,29 +14,28 @@
     </div>
   </div>
 
-  <form method="get" class="page-filters filtros mt-4 d-flex flex-wrap" style="gap:.5rem; margin-bottom:1rem;">
+  <form method="get" class="page-filters filtros ventas-filtros mt-4 d-flex flex-wrap">
     <div>
       <label>Estado</label>
       <select name="estado" class="form-select">
         <option value="">Todos</option>
-        <option value="CONFIRMADA" {% if f_estado == "CONFIRMADA" %}selected{% endif %}>CONFIRMADA</option>
-        <option value="BORRADOR"   {% if f_estado == "BORRADOR" %}selected{% endif %}>BORRADOR</option>
-        <option value="ANULADA"    {% if f_estado == "ANULADA" %}selected{% endif %}>ANULADA</option>
+        {% for value,label in estados %}
+          <option value="{{ value }}" {% if f_estado == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
       </select>
     </div>
     <div>
       <label>Forma de pago</label>
       <select name="forma" class="form-select">
         <option value="">Todas</option>
-        <option value="EFECTIVO"      {% if f_forma == "EFECTIVO" %}selected{% endif %}>Efectivo</option>
-        <option value="TARJETA"       {% if f_forma == "TARJETA" %}selected{% endif %}>Tarjeta</option>
-        <option value="TRANSFERENCIA" {% if f_forma == "TRANSFERENCIA" %}selected{% endif %}>Transferencia</option>
-        <option value="MIXTO"         {% if f_forma == "MIXTO" %}selected{% endif %}>Mixto</option>
+        {% for value,label in formas_pago %}
+          <option value="{{ value }}" {% if f_forma == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
       </select>
     </div>
-    <div class="align-end" style="align-self:flex-end;">
+    <div class="ventas-filter-actions">
       <button type="submit" class="btn btn-primary">Filtrar</button>
-      <a href="{% url 'ventas_lista' %}" class="btn btn">Limpiar</a>
+      <a href="{% url 'ventas_lista' %}" class="btn btn-outline-secondary">Limpiar</a>
     </div>
   </form>
 
@@ -56,8 +55,13 @@
       </thead>
       <tbody>
         {% for v in ventas %}
-          <tr>
-            <td>{{ v.numero_ticket }}</td>
+          <tr class="{% if v.estado == 'ANULADA' %}venta-row-anulada{% endif %}">
+            <td>
+              <strong>{{ v.numero_ticket }}</strong>
+              {% if v.estado == 'ANULADA' %}
+                <span class="venta-muted-label">Historial</span>
+              {% endif %}
+            </td>
             <td>{{ v.fecha|date:"d/m/Y H:i" }}</td>
 
             <td>
@@ -68,9 +72,19 @@
               {% endif %}
             </td>
 
-            <td>{{ v.forma_pago }}</td>
-            <td>{{ v.estado }}</td>
-            <td class="r">${{ v.total_neto|floatformat:2 }}</td>
+            <td><span class="venta-pay-badge">{{ v.get_forma_pago_display }}</span></td>
+            <td>
+              <span class="venta-status-badge venta-status-{{ v.estado|lower }}">
+                {{ v.get_estado_display }}
+              </span>
+            </td>
+            <td class="r">
+              {% if v.estado == 'ANULADA' %}
+                <span class="venta-total-anulado">${{ v.total_neto|floatformat:2 }}</span>
+              {% else %}
+                ${{ v.total_neto|floatformat:2 }}
+              {% endif %}
+            </td>
 
             <td class="r">
               <a class="btn btn-sm" href="{% url 'venta_detalle' v.pk %}">Detalle</a>

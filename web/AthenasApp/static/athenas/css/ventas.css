@@ -295,3 +295,260 @@ input[readonly]{
     color: var(--text);
     width: 260px;
 }
+
+/* ----- Listado de ventas ----- */
+.ventas-filtros {
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+
+.ventas-filter-actions {
+  align-self: flex-end;
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.venta-status-badge,
+.venta-pay-badge,
+.venta-muted-label {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid #243042;
+  padding: .2rem .55rem;
+  font-size: .82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.venta-status-confirmada {
+  background: #123b2a;
+  color: #a7f3d0;
+  border-color: #205c49;
+}
+
+.venta-status-borrador {
+  background: #3f3b1a;
+  color: #fcd34d;
+  border-color: #665c1f;
+}
+
+.venta-status-anulada {
+  background: #4b1e1e;
+  color: #fca5a5;
+  border-color: #703232;
+}
+
+.venta-pay-badge {
+  color: #dbeafe;
+  background: #172033;
+}
+
+.venta-muted-label {
+  margin-left: .35rem;
+  color: #fca5a5;
+  background: rgba(239,68,68,.08);
+}
+
+.venta-row-anulada {
+  opacity: .72;
+}
+
+.venta-row-anulada td {
+  background: rgba(75,30,30,.12);
+}
+
+.venta-total-anulado {
+  text-decoration: line-through;
+  color: #fca5a5;
+}
+
+/* ----- Carrito de nueva venta ----- */
+.venta-form-page .fila-carrito {
+  display: grid;
+  gap: .9rem;
+}
+
+.cart-table-wrap {
+  border: 1px solid #243042;
+  border-radius: 12px;
+}
+
+.cart-table td,
+.cart-table th {
+  vertical-align: middle;
+}
+
+.cart-product-name {
+  min-width: 220px;
+  font-weight: 700;
+}
+
+.cart-qty {
+  width: 86px;
+  text-align: right;
+}
+
+.cart-actions {
+  min-width: 210px;
+}
+
+.cart-actions .btn {
+  margin-left: .25rem;
+}
+
+.stock-inline {
+  display: inline-flex;
+  justify-content: center;
+  min-width: 42px;
+  border-radius: 999px;
+  padding: .2rem .5rem;
+  background: rgba(45,212,191,.1);
+  border: 1px solid rgba(45,212,191,.22);
+  color: #99f6e4;
+  font-weight: 700;
+}
+
+.venta-totales > div {
+  min-width: 150px;
+  text-align: right;
+}
+
+/* ----- Ticket imprimible ----- */
+.ticket-print {
+  max-width: 760px;
+  padding: 1.25rem;
+}
+
+.ticket-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid #243042;
+  padding-bottom: .9rem;
+  margin-bottom: .9rem;
+}
+
+.ticket-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.ticket-header p,
+.ticket-footer p {
+  margin: .2rem 0 0;
+  color: var(--muted);
+}
+
+.ticket-cancelled {
+  border: 1px solid #703232;
+  background: #4b1e1e;
+  color: #fca5a5;
+  border-radius: 8px;
+  padding: .55rem .75rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: .9rem;
+}
+
+.ticket-meta,
+.ticket-summary,
+.ticket-payments {
+  display: grid;
+  gap: .45rem;
+  margin: .9rem 0;
+}
+
+.ticket-meta {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.ticket-meta div,
+.ticket-summary div,
+.ticket-payments div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #141a23;
+  border: 1px solid #243042;
+  border-radius: 8px;
+  padding: .5rem .65rem;
+}
+
+.ticket-meta span,
+.ticket-summary span,
+.ticket-payments span {
+  color: var(--muted);
+}
+
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.ticket-table th,
+.ticket-table td {
+  padding: .45rem .35rem;
+  border-bottom: 1px solid #243042;
+}
+
+.ticket-table thead th {
+  color: var(--primary);
+  font-size: .82rem;
+  text-transform: uppercase;
+}
+
+.ticket-total {
+  font-size: 1.1rem;
+}
+
+.ticket-footer {
+  border-top: 1px solid #243042;
+  margin-top: 1rem;
+  padding-top: .75rem;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .ventas-filter-actions,
+  .ventas-filter-actions .btn {
+    width: 100%;
+  }
+
+  .cart-actions {
+    min-width: 180px;
+  }
+
+  .barcode-box input {
+    width: 100%;
+  }
+}
+
+@media print {
+  .ticket-print {
+    color: #000;
+    max-width: none;
+    width: 100%;
+  }
+
+  .ticket-print-btn {
+    display: none !important;
+  }
+
+  .ticket-meta div,
+  .ticket-summary div,
+  .ticket-payments div {
+    background: #fff;
+    border-color: #ddd;
+  }
+
+  .ticket-table th,
+  .ticket-table td,
+  .ticket-header,
+  .ticket-footer {
+    border-color: #ddd;
+  }
+}

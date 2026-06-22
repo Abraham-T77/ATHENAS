@@ -6,10 +6,9 @@
 {% endblock %}
 
 {% block content %}
-<section class="tarjeta">
+<section class="tarjeta venta-form-page">
   <div class="d-flex justify-content-between align-items-center">
     <h1>Nueva Venta</h1>
-    <div></div>
   </div>
 
   {% include 'athenas/includes/_messages.html' %}
@@ -17,12 +16,10 @@
   <form method="post" id="form-venta" class="form-venta">
     {% csrf_token %}
 
-    <!-- CABECERA: cliente + forma de pago + mixto + desc global -->
     <div class="grid-venta">
       <div>
         <label>Cliente:</label>
         <select name="cliente_id">
-          {# Siempre ofrecemos Consumidor Final como default #}
           <option value="">Consumidor Final</option>
           {% for c in clientes %}
             <option value="{{ c.id_cliente }}">{{ c.nombre }}</option>
@@ -60,17 +57,12 @@
       </div>
     </div>
 
-    <!-- CUERPO: selector de productos + carrito -->
     <div class="fila-carrito">
-
-      <!-- LECTOR DE CÓDIGO DE BARRAS -->
       <div class="barcode-box">
-          <label for="barcode_input">Código de barras:</label>
-          <input type="text" id="barcode_input" placeholder="Escaneá un producto..." autocomplete="off">
+        <label for="barcode_input">Codigo de barras:</label>
+        <input type="text" id="barcode_input" placeholder="Escanea un producto..." autocomplete="off">
       </div>
 
-
-      <!-- Fila de alta de ítems (corregida) -->
       <div class="add-linea">
         <label>
           Producto:
@@ -79,11 +71,11 @@
             {% for p in productos %}
               <option value="{{ p.id_producto }}"
                       data-precio="{{ p.precio_venta }}"
-                      data-codigo="{{ p.codigo_barra }}">
-                  {{ p.descripcion }}
+                      data-codigo="{{ p.codigo_barra }}"
+                      data-stock="{{ p.stock_actual }}">
+                {{ p.descripcion }}
               </option>
             {% endfor %}
-
           </select>
         </label>
 
@@ -98,28 +90,31 @@
         </label>
 
         <label>
-          Desc. ítem (%):
+          Desc. item (%):
           <input type="text" id="prod_desc" placeholder="opcional">
         </label>
 
         <button type="button" id="btn_add" class="btn btn-agregar">Agregar</button>
       </div>
 
-      <table class="tabla" id="tabla_items">
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Cant</th>
-            <th>PU</th>
-            <th>Desc %</th>
-            <th>Subtotal</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-responsive cart-table-wrap">
+        <table class="tabla cart-table" id="tabla_items">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th class="r">Stock</th>
+              <th class="r">Cant</th>
+              <th class="r">PU</th>
+              <th class="r">Desc %</th>
+              <th class="r">Subtotal</th>
+              <th class="r">Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
-      <div class="totales">
+      <div class="totales venta-totales">
         <div>Bruto: $<span id="t_bruto">0.00</span></div>
         <div>Neto: $<span id="t_neto">0.00</span></div>
       </div>
@@ -136,140 +131,263 @@
 {% block extra_js %}
 <script>
 (function(){
-  const fp       = document.getElementById('forma_pago');
-  const mixtos   = document.getElementById('pagos_mixtos');
-  const tabla    = document.getElementById('tabla_items').querySelector('tbody');
-  const sel      = document.getElementById('prod_selector');
-  const icant    = document.getElementById('prod_cant');
-  const iprec    = document.getElementById('prod_precio');
-  const idesc    = document.getElementById('prod_desc');
-  const tBruto   = document.getElementById('t_bruto');
-  const tNeto    = document.getElementById('t_neto');
-  const dGlobal  = document.getElementById('descuento_global_pct');
+  const fp = document.getElementById('forma_pago');
+  const mixtos = document.getElementById('pagos_mixtos');
+  const form = document.getElementById('form-venta');
+  const tabla = document.getElementById('tabla_items').querySelector('tbody');
+  const sel = document.getElementById('prod_selector');
+  const icant = document.getElementById('prod_cant');
+  const iprec = document.getElementById('prod_precio');
+  const idesc = document.getElementById('prod_desc');
+  const tBruto = document.getElementById('t_bruto');
+  const tNeto = document.getElementById('t_neto');
+  const dGlobal = document.getElementById('descuento_global_pct');
+  const barcodeInput = document.getElementById('barcode_input');
+  const items = new Map();
 
-  const fmt = n => (Math.round(n * 100) / 100).toFixed(2);
-
-  // setear precio al seleccionar producto
-  sel.addEventListener('change', () => {
-    const op = sel.options[sel.selectedIndex];
-    iprec.value = op ? (op.dataset.precio || '') : '';
-  });
+  const fmt = (n) => (Math.round(Number(n || 0) * 100) / 100).toFixed(2);
+  const parseMoney = (value) => parseFloat(String(value || '0').replace(',', '.'));
+  const parseOptionalPct = (value) => {
+    if (String(value || '').trim() === '') return null;
+    const pct = parseMoney(value);
+    return Number.isFinite(pct) ? pct : NaN;
+  };
+  const escapeHtml = (value) => String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 
   function toggleMixto() {
     if (!mixtos) return;
     mixtos.style.display = (fp.value === 'MIXTO') ? 'grid' : 'none';
   }
 
-  fp.addEventListener('change', toggleMixto);
-  // estado inicial
-  toggleMixto();
+  function productFromOption(op) {
+    if (!op || !op.value) return null;
+    return {
+      id: op.value,
+      name: (op.textContent || '').trim(),
+      price: parseMoney(op.dataset.precio),
+      barcode: op.dataset.codigo || '',
+      stock: parseInt(op.dataset.stock || '0', 10)
+    };
+  }
 
-  // agregar ítem
-  document.getElementById('btn_add').addEventListener('click', () => {
-    const pid   = sel.value;
-    const ptext = sel.options[sel.selectedIndex]?.text || '';
-    const cant  = parseInt(icant.value || '0', 10);
-    const pu    = parseFloat((iprec.value || '0').replace(',', '.'));
-    const di    = idesc.value ? parseFloat(idesc.value.replace(',', '.')) : null;
+  function selectedProductData() {
+    return productFromOption(sel.options[sel.selectedIndex]);
+  }
 
-    if (!pid || cant <= 0 || isNaN(pu)) {
-      alert('Datos inválidos del ítem.');
+  function subtotal(item) {
+    const discount = item.discount !== null ? item.discount : 0;
+    return item.quantity * item.price * (1 - discount / 100);
+  }
+
+  function addOrUpdateItem(product, quantity, price, discount, options) {
+    const opts = options || {};
+    if (!product || !product.id) {
+      alert('Selecciona un producto.');
+      return;
+    }
+    if (!Number.isFinite(product.stock) || product.stock <= 0) {
+      alert('Este producto no tiene stock disponible.');
+      return;
+    }
+    if (!Number.isFinite(quantity) || quantity <= 0) {
+      alert('La cantidad debe ser mayor a cero.');
+      return;
+    }
+    if (!Number.isFinite(price) || price < 0) {
+      alert('El precio del item no es valido.');
+      return;
+    }
+    if (discount !== null && (!Number.isFinite(discount) || discount < 0 || discount > 100)) {
+      alert('El descuento del item debe estar entre 0 y 100.');
       return;
     }
 
-    const precioAplicado = (di !== null && di >= 0 && di <= 100) ? (pu * (1 - di/100)) : pu;
-    const subtotal       = cant * precioAplicado;
+    const current = items.get(product.id);
+    const nextQuantity = opts.increment && current ? current.quantity + quantity : quantity;
+    if (nextQuantity > product.stock) {
+      alert(`Stock insuficiente para "${product.name}". Disponible: ${product.stock}.`);
+      return;
+    }
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${ptext}</td>
-      <td class="r">${cant}</td>
-      <td class="r">${fmt(pu)}</td>
-      <td class="r">${di !== null ? fmt(di) : ''}</td>
-      <td class="r sub">${fmt(subtotal)}</td>
-      <td>
-        <button type="button" class="rm">×</button>
-        <input type="hidden" name="producto_id[]" value="${pid}">
-        <input type="hidden" name="cantidad[]" value="${cant}">
-        <input type="hidden" name="precio_unitario[]" value="${fmt(pu)}">
-        <input type="hidden" name="desc_item_pct[]" value="${di !== null ? fmt(di) : ''}">
-      </td>
-    `;
-    tabla.appendChild(tr);
+    items.set(product.id, {
+      id: product.id,
+      name: product.name,
+      stock: product.stock,
+      quantity: nextQuantity,
+      price: Number.isFinite(price) ? price : product.price,
+      discount: discount
+    });
+    renderCart();
+  }
 
+  function renderCart() {
+    tabla.innerHTML = '';
+    items.forEach((item) => {
+      const tr = document.createElement('tr');
+      tr.dataset.pid = item.id;
+      tr.innerHTML = `
+        <td class="cart-product-name">${escapeHtml(item.name)}</td>
+        <td class="r"><span class="stock-inline">${item.stock}</span></td>
+        <td class="r">
+          <input class="cart-qty" type="number" min="1" max="${item.stock}" value="${item.quantity}" aria-label="Cantidad de ${escapeHtml(item.name)}">
+        </td>
+        <td class="r">$${fmt(item.price)}</td>
+        <td class="r">${item.discount !== null ? fmt(item.discount) : '-'}</td>
+        <td class="r sub">$${fmt(subtotal(item))}</td>
+        <td class="r cart-actions">
+          <button type="button" class="qty-dec btn btn-sm" aria-label="Restar">-</button>
+          <button type="button" class="qty-inc btn btn-sm" aria-label="Sumar">+</button>
+          <button type="button" class="rm btn btn-sm btn-outline-danger" aria-label="Eliminar">Eliminar</button>
+          <input type="hidden" name="producto_id[]" value="${item.id}">
+          <input type="hidden" name="cantidad[]" value="${item.quantity}">
+          <input type="hidden" name="precio_unitario[]" value="${fmt(item.price)}">
+          <input type="hidden" name="desc_item_pct[]" value="${item.discount !== null ? fmt(item.discount) : ''}">
+        </td>
+      `;
+      tabla.appendChild(tr);
+    });
     recalcular();
+  }
 
-    // limpiar inputs rápidos
+  function clearQuickInputs() {
     sel.value = '';
     icant.value = 1;
+    icant.removeAttribute('max');
     iprec.value = '';
     idesc.value = '';
-  });
-
-  // eliminar línea
-  tabla.addEventListener('click', (ev) => {
-    if (ev.target.classList.contains('rm')) {
-      ev.target.closest('tr').remove();
-      recalcular();
-    }
-  });
-
-  dGlobal.addEventListener('input', recalcular);
+  }
 
   function recalcular(){
     let bruto = 0;
-    tabla.querySelectorAll('tr .sub').forEach(td => {
-      bruto += parseFloat((td.textContent || '0').replace(',', '.')) || 0;
-    });
+    items.forEach(item => { bruto += subtotal(item); });
     tBruto.textContent = fmt(bruto);
 
     let neto = bruto;
-    const d = parseFloat((dGlobal.value || '').replace(',', '.'));
+    const d = parseMoney(dGlobal.value || '');
     if (!isNaN(d) && d >= 0 && d <= 100) {
       neto = bruto * (1 - d/100);
     }
     tNeto.textContent = fmt(neto);
   }
-})();
 
-// === LECTOR DE CÓDIGO DE BARRAS ===
-// Busca el producto por código y lo agrega directo al carrito
+  function findProductByBarcode(code) {
+    return Array.from(sel.options)
+      .filter(op => op.value)
+      .find(op => (op.dataset.codigo || '') === code);
+  }
 
-const barcodeInput = document.getElementById('barcode_input');
-const sel = document.getElementById('prod_selector');
-const icant = document.getElementById('prod_cant');
-const iprec = document.getElementById('prod_precio');
-
-barcodeInput.addEventListener('keypress', function(ev) {
-    if (ev.key === 'Enter') {
-        ev.preventDefault();
-
-        const code = barcodeInput.value.trim();
-        if (!code) return;
-
-        // Buscar producto con ese código dentro del <select>
-        const op = [...sel.options].find(o => o.dataset.codigo === code);
-
-        if (!op) {
-            alert("No existe un producto con ese código de barras.");
-            barcodeInput.value = "";
-            return;
-        }
-
-        // Seleccionar el producto encontrado
-        sel.value = op.value;
-        iprec.value = op.dataset.precio || "";
-        icant.value = 1;
-
-        // Agregar al carrito
-        document.getElementById('btn_add').click();
-
-        // Limpiar lector
-        barcodeInput.value = "";
+  sel.addEventListener('change', () => {
+    const op = sel.options[sel.selectedIndex];
+    iprec.value = op ? (op.dataset.precio || '') : '';
+    if (op && op.dataset.stock) {
+      icant.max = op.dataset.stock;
+    } else {
+      icant.removeAttribute('max');
     }
-});
+  });
 
+  fp.addEventListener('change', toggleMixto);
+  toggleMixto();
 
+  document.getElementById('btn_add').addEventListener('click', () => {
+    const product = selectedProductData();
+    const quantity = parseInt(icant.value || '0', 10);
+    const price = parseMoney(iprec.value || (product ? product.price : 0));
+    const discount = parseOptionalPct(idesc.value);
+    addOrUpdateItem(product, quantity, price, discount, { increment: true });
+    clearQuickInputs();
+  });
 
+  tabla.addEventListener('click', (ev) => {
+    const tr = ev.target.closest('tr');
+    if (!tr) return;
+    const item = items.get(tr.dataset.pid);
+    if (!item) return;
+
+    if (ev.target.classList.contains('qty-inc')) {
+      if (item.quantity >= item.stock) {
+        alert(`Stock insuficiente para "${item.name}". Disponible: ${item.stock}.`);
+        return;
+      }
+      item.quantity += 1;
+      renderCart();
+    }
+
+    if (ev.target.classList.contains('qty-dec')) {
+      item.quantity = Math.max(1, item.quantity - 1);
+      renderCart();
+    }
+
+    if (ev.target.classList.contains('rm')) {
+      items.delete(item.id);
+      renderCart();
+    }
+  });
+
+  tabla.addEventListener('change', (ev) => {
+    if (!ev.target.classList.contains('cart-qty')) return;
+
+    const tr = ev.target.closest('tr');
+    const item = items.get(tr.dataset.pid);
+    if (!item) return;
+
+    const quantity = parseInt(ev.target.value || '0', 10);
+    if (!Number.isFinite(quantity) || quantity <= 0) {
+      alert('La cantidad debe ser mayor a cero.');
+      ev.target.value = item.quantity;
+      return;
+    }
+    if (quantity > item.stock) {
+      alert(`Stock insuficiente para "${item.name}". Disponible: ${item.stock}.`);
+      ev.target.value = item.quantity;
+      return;
+    }
+    item.quantity = quantity;
+    renderCart();
+  });
+
+  dGlobal.addEventListener('input', recalcular);
+
+  barcodeInput.addEventListener('keydown', function(ev) {
+    if (ev.key !== 'Enter') return;
+
+    ev.preventDefault();
+
+    const code = barcodeInput.value.trim();
+    if (!code) return;
+
+    const op = findProductByBarcode(code);
+    if (!op) {
+      alert('No existe un producto con ese codigo de barras.');
+      barcodeInput.value = '';
+      return;
+    }
+
+    const product = productFromOption(op);
+    addOrUpdateItem(product, 1, product.price, null, { increment: true });
+    barcodeInput.value = '';
+  });
+
+  form.addEventListener('submit', (ev) => {
+    if (items.size === 0) {
+      ev.preventDefault();
+      alert('Agrega al menos un producto al carrito.');
+      return;
+    }
+
+    for (const item of items.values()) {
+      if (item.quantity <= 0 || item.quantity > item.stock) {
+        ev.preventDefault();
+        alert(`Revisa la cantidad de "${item.name}".`);
+        return;
+      }
+    }
+  });
+})();
 </script>
 {% endblock %}

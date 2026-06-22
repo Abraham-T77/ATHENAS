@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction, models
 from django.utils import timezone
 from django.urls import reverse
+from decimal import Decimal, InvalidOperation
 
 from AthenasApp.audit import registrar_auditoria
 
@@ -39,6 +40,7 @@ def ventas_lista(request):
     neg_id = _negocio_id_from_request(request)
     qs = (Venta.objects
           .filter(negocio_id=neg_id)
+          .select_related("cliente")
           .order_by('-fecha', '-id_venta'))
 
     # Filtros simples
@@ -53,6 +55,8 @@ def ventas_lista(request):
         "ventas": qs[:200],
         "f_estado": estado,
         "f_forma": forma,
+        "estados": Venta.ESTADOS,
+        "formas_pago": Venta.FORMAS_PAGO,
     }
     return render(request, 'athenas/ventas/lista.html', ctx)
 
@@ -84,10 +88,14 @@ def venta_nueva(request):
         # Normalizar descuento global
         try:
             descuento_global_pct = (
-                float(desc_global_pct.replace(',', '.')) if desc_global_pct else None
+                Decimal(desc_global_pct.replace(',', '.')) if desc_global_pct else None
             )
-        except Exception:
-            descuento_global_pct = None
+        except (InvalidOperation, AttributeError):
+            messages.error(request, "El descuento global no es válido.")
+            return redirect('venta_nueva')
+        if descuento_global_pct is not None and not (Decimal("0") <= descuento_global_pct <= Decimal("100")):
+            messages.error(request, "El descuento global debe estar entre 0 y 100.")
+            return redirect('venta_nueva')
 
         # Si no hay cliente, crear/usar "Consumidor Final"
         if not cliente_id:
@@ -104,12 +112,18 @@ def venta_nueva(request):
             try:
                 pid = int(prod_ids[i])
                 cant = int(cants[i])
-                pu = float((precios[i] or '0').replace(',', '.'))
-                di = float((descs[i] or '').replace(',', '.')) if (i < len(descs) and descs[i]) else None
-            except Exception:
-                continue
-            if pid > 0 and cant > 0 and pu >= 0:
-                items.append((pid, cant, pu, di))
+                pu = Decimal((precios[i] or '0').replace(',', '.'))
+                di = Decimal((descs[i] or '').replace(',', '.')) if (i < len(descs) and descs[i]) else None
+            except (ValueError, InvalidOperation, AttributeError, IndexError):
+                messages.error(request, "El carrito contiene datos inválidos.")
+                return redirect('venta_nueva')
+            if pid <= 0 or cant <= 0 or pu < 0:
+                messages.error(request, "El carrito contiene productos, cantidades o precios inválidos.")
+                return redirect('venta_nueva')
+            if di is not None and not (Decimal("0") <= di <= Decimal("100")):
+                messages.error(request, "El descuento por ítem debe estar entre 0 y 100.")
+                return redirect('venta_nueva')
+            items.append((pid, cant, pu, di))
 
         if not items:
             messages.error(request, "El carrito está vacío o contiene datos inválidos.")
@@ -137,10 +151,11 @@ def venta_nueva(request):
                         activo=True)
             )
             prods_map = {p.id_producto: p for p in productos_qs}
+            cantidades_por_producto = {}
+            for pid, cant, _pu, _di in items:
+                cantidades_por_producto[pid] = cantidades_por_producto.get(pid, 0) + cant
 
-            total_bruto = 0
-            lineas_ok = []
-            for pid, cant, pu, di in items:
+            for pid, cantidad_total in cantidades_por_producto.items():
                 prod = prods_map.get(pid)
                 if not prod:
                     transaction.set_rollback(True)
@@ -149,26 +164,30 @@ def venta_nueva(request):
                         f"Producto ID {pid} no existe en el negocio actual."
                     )
                     return redirect('venta_nueva')
-
-                if prod.stock_actual < cant:
+                if prod.stock_actual < cantidad_total:
                     transaction.set_rollback(True)
                     messages.error(
                         request,
-                        f"Sin stock suficiente para '{prod.descripcion}'."
+                        f"Sin stock suficiente para '{prod.descripcion}'. Stock disponible: {prod.stock_actual}."
                     )
                     return redirect('venta_nueva')
 
-                precio_aplicado = pu
-                if di is not None and 0 <= di <= 100:
-                    precio_aplicado = round(pu * (1 - di/100), 2)
+            total_bruto = 0
+            lineas_ok = []
+            for pid, cant, pu, di in items:
+                prod = prods_map.get(pid)
 
-                subtotal = round(cant * precio_aplicado, 2)
+                precio_aplicado = pu
+                if di is not None:
+                    precio_aplicado = (pu * (Decimal("1") - di / Decimal("100"))).quantize(Decimal("0.01"))
+
+                subtotal = (Decimal(cant) * precio_aplicado).quantize(Decimal("0.01"))
                 total_bruto += subtotal
                 lineas_ok.append((prod, cant, pu, di, subtotal))
 
             total_neto = total_bruto
-            if descuento_global_pct is not None and 0 <= descuento_global_pct <= 100:
-                total_neto = round(total_bruto * (1 - descuento_global_pct/100), 2)
+            if descuento_global_pct is not None:
+                total_neto = (total_bruto * (Decimal("1") - descuento_global_pct / Decimal("100"))).quantize(Decimal("0.01"))
 
             # anio + secuencial (por negocio, año)
             anio = timezone.now().year
@@ -240,9 +259,9 @@ def venta_nueva(request):
                 for key in ['pago_efectivo', 'pago_tarjeta', 'pago_transferencia']:
                     raw = request.POST.get(key) or ""
                     try:
-                        monto = float(raw.replace(',', '.')) if raw else 0
-                    except Exception:
-                        monto = 0
+                        monto = Decimal(raw.replace(',', '.')) if raw else Decimal("0")
+                    except (InvalidOperation, AttributeError):
+                        monto = Decimal("0")
                     if monto > 0:
                         metodo = key.replace('pago_', '').upper()
                         partes.append((metodo, monto))
@@ -255,8 +274,8 @@ def venta_nueva(request):
                     )
                     return redirect('venta_nueva')
 
-                suma = round(sum(m for _, m in partes), 2)
-                if suma != float(total_neto):
+                suma = sum((m for _, m in partes), Decimal("0")).quantize(Decimal("0.01"))
+                if suma != total_neto:
                     transaction.set_rollback(True)
                     messages.error(
                         request,
@@ -347,9 +366,14 @@ def venta_detalle(request, pk):
 @permission_required('AthenasApp.view_venta', raise_exception=True)
 def venta_ticket(request, pk):
     neg_id = _negocio_id_from_request(request)
-    venta = get_object_or_404(Venta, pk=pk, negocio_id=neg_id)
+    venta = get_object_or_404(
+        Venta.objects.select_related("negocio", "cliente"),
+        pk=pk,
+        negocio_id=neg_id,
+    )
     detalles = VentaDetalle.objects.filter(venta=venta)
-    ctx = {"venta": venta, "detalles": detalles}
+    pagos = VentaPago.objects.filter(venta=venta)
+    ctx = {"venta": venta, "detalles": detalles, "pagos": pagos}
     return render(request, 'athenas/ventas/ticket.html', ctx)
 
 

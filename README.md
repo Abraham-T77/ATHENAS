@@ -1,108 +1,194 @@
 # Sistema Athenas
 
-## Descripción breve
-Sistema Athenas es una aplicación web Django para la gestión de negocios, incluyendo ventas, compras, stock, caja y reportes. Está pensada como una solución de punto de venta con aislamiento por negocio y control de flujos operativos.
+## Descripcion
 
-## Stack técnico
-- Python 3 / Django
-- MySQL 8
-- Docker Compose
-- OpenPyXL para exportación Excel
-- ReportLab para exportación PDF
-- Matplotlib para generación de gráficos en reportes
+Sistema Athenas es una aplicacion web administrativa y comercial desarrollada con Django. Esta orientada a la gestion diaria de negocios: productos, ventas, compras, caja, stock, clientes, proveedores, cuentas corrientes, alertas, reportes, bitacora y usuarios.
 
-## Estructura general del proyecto
-- `docker-compose.yml` - definición de servicios Docker: `db`, `phpmyadmin`, `web`.
-- `.env` - variables de entorno para la base de datos y configuración.
-- `web/` - aplicación Django principal.
-  - `AthenasProyecto/` - configuración Django (`settings.py`, `urls.py`, `wsgi.py`).
-  - `AthenasApp/` - código de la aplicación: modelos, vistas, templates, urls, forms, utilidades.
-  - `requirements.txt` - dependencias Python.
+El sistema trabaja con negocio activo, permisos por rol y flujos operativos pensados para punto de venta y administracion interna.
 
-## Cómo levantar el sistema con Docker Compose
-1. Crear y completar el archivo `.env` en la raíz con las credenciales de MySQL.
-2. Desde la raíz del proyecto ejecutar:
-   ```bash
-   docker compose up -d
-   ```
-3. Para ver logs:
-   ```bash
-   docker compose logs -f web
-   ```
-4. Para detener los servicios:
-   ```bash
-   docker compose down
-   ```
+## Estado actual
 
-## URLs locales importantes
-- Aplicación web: `http://localhost:8000`
-- PhpMyAdmin: `http://localhost:8080`
+El sistema cuenta con modulos funcionales para gestion comercial y administrativa. La rama actual incluye correcciones recientes de consistencia en ventas anuladas, caja, cuentas corrientes, pagos de clientes, reportes financieros y stock.
 
-## Comandos útiles de Django dentro del contenedor
-- Migrar la base de datos:
-  ```bash
-  docker compose exec web python manage.py migrate
-  ```
-- Reiniciar el servidor Django (si no se usa `docker compose up`):
-  ```bash
-  docker compose exec web python manage.py runserver 0.0.0.0:8000
-  ```
-- Crear superusuario:
-  ```bash
-  docker compose exec web python manage.py createsuperuser
-  ```
-- Comprobar el proyecto:
-  ```bash
-  docker compose exec web python manage.py check
-  ```
-- Ejecutar tests:
-  ```bash
-  docker compose exec web python manage.py test
-  ```
+No se deben considerar estos cambios como despliegue productivo final sin una ronda adicional de pruebas con datos reales, backups y configuracion segura de entorno.
 
-## Flujo básico de trabajo con Git
-1. Crear rama para cambios:
-   ```bash
-   git checkout -b capa-1a-estabilidad
-   ```
-2. Revisar estado antes de trabajar:
-   ```bash
-   git status
-   ```
-3. Añadir cambios y confirmar:
-   ```bash
-   git add .
-   git commit -m "Capa 1A: estabilidad operativa y correcciones de caja/ventas"
-   ```
-4. Sincronizar con el remoto:
-   ```bash
-   git fetch origin
-   git rebase origin/main
-   git push -u origin capa-1a-estabilidad
-   ```
+## Stack tecnico
 
-## Estado actual del proyecto
-- Rama activa: `capa-1a-estabilidad`.
-- Corrección aplicada en `web/AthenasApp/models.py` para mejorar la anulación de ventas y preservar la consistencia de caja.
-- El cálculo de saldo de caja ya considera solo movimientos de tipo `INGRESO` y `EGRESO`, evitando sumar movimientos de `ARQUEO` como flujo operativo.
-- No se generaron migraciones porque los cambios son de lógica y de elección de tipo de movimiento.
-- Hay una dependencia de entorno pendiente: el comando `python manage.py check` en el entorno local falla si no está instalado `matplotlib`.
+- Backend: Python 3.12 y Django 5.
+- Base de datos: MySQL 8.
+- Frontend/templates: Django Templates, HTML, CSS propio y JavaScript puntual.
+- Docker/Docker Compose: servicios `web`, `db` y `phpmyadmin`.
+- Dependencias principales:
+  - `mysqlclient` para conexion MySQL.
+  - `python-dotenv` para configuracion por entorno.
+  - `matplotlib` para graficos de reportes.
+  - `reportlab` para exportaciones PDF.
+  - `openpyxl` para exportaciones Excel.
 
-## Próximas mejoras pendientes
-- Revisar el flujo de anulación para ventas con pagos mixtos y abonos parciales.
-- Añadir validación de integridad extra en `Venta.anular()` para no generar reversión doble si la venta ya tiene movimientos de reversión.
-- Mejorar el control de caja para que el arqueo sea un registro separado de conciliación y no se muestre como movimiento operativo en los listados financieros.
-- Auditar el uso de `CajaUsuario` para verificar cierres de usuario independientes.
+## Modulos principales
 
-## Riesgos pendientes
-- Dependencia de `matplotlib` requerida por la app de reportes; el entorno de desarrollo debe instalarla para ejecutar `manage.py check` y servir reportes.
-- El cálculo de saldo de caja es correcto para los tipos actuales, pero la lógica del cierre depende de que no existan otros tipos de movimientos operativos no contemplados.
-- Las pruebas automatizadas no se han ejecutado en el contenedor tras la corrección.
+- Dashboard: acceso inicial segun rol y permisos.
+- Productos: alta, edicion, filtros, stock, codigo de barras y catalogacion.
+- Categorias, marcas y unidades: catalogos auxiliares para productos.
+- Ventas: creacion de venta, carrito, pagos, stock y anulacion.
+- Ticket de venta: vista imprimible de la operacion.
+- Caja: apertura, cierre, arqueo, movimientos, ingresos, egresos y reversas.
+- Stock y movimientos: consulta de stock, ajustes y trazabilidad operativa.
+- Clientes: gestion de cartera y saldo de cuenta corriente.
+- Cuentas corrientes: deudas de clientes, pagos, saldos y proveedor/compras.
+- Proveedores: gestion de proveedores y compras asociadas.
+- Compras: registro, confirmacion, anulacion y detalle de compras.
+- Alertas: stock minimo, vencimientos, morosidad y alertas generales.
+- Reportes: ventas, compras, stock, graficos y exportaciones PDF/Excel.
+- Bitacora: auditoria de acciones relevantes del sistema.
+- Usuarios/permisos: gestion de usuarios, roles y accesos.
+
+## Mejoras recientes aplicadas
+
+- Correccion de paginacion y filtros en productos.
+- Manejo de error 403 con redireccion y mensaje claro.
+- Mejor visualizacion de stock, estados y botones de filtrado.
+- Preservacion de datos al crear categoria, marca o unidad desde producto.
+- Visualizacion clara de ventas anuladas.
+- Mejoras de carrito, cantidad manual y lector de codigo de barras.
+- Pulido del ticket de venta.
+- Consistencia entre ventas anuladas y caja mediante reversas.
+- Consistencia de cuentas corrientes y pagos de clientes.
+- Reportes financieros y stock alineados con filtros, negocio activo y exportaciones.
+- Pulido visual general en tablas, filtros, formularios, botones y responsive basico.
+
+## Como levantar el proyecto con Docker
+
+Desde la raiz del proyecto:
+
+```bash
+docker compose up -d --build
+```
+
+Verificar servicios:
+
+```bash
+docker compose ps
+```
+
+Ver logs del servicio web:
+
+```bash
+docker compose logs -f web
+```
+
+Detener servicios:
+
+```bash
+docker compose down
+```
+
+## URLs locales
+
+- Sistema: `http://localhost:8000`
+- Admin Django: `http://localhost:8000/admin/`
+- phpMyAdmin: `http://localhost:8080`
+
+## Comandos utiles
+
+Ejecutar dentro del contenedor web:
+
+```bash
+docker compose exec web python manage.py check
+```
+
+```bash
+docker compose exec web python manage.py migrate
+```
+
+```bash
+docker compose exec web python manage.py makemigrations
+```
+
+```bash
+docker compose exec web python manage.py createsuperuser
+```
+
+Otros comandos utiles:
+
+```bash
+docker compose exec web python manage.py shell
+```
+
+```bash
+docker compose exec web python manage.py test
+```
+
+## Flujo Git recomendado
+
+Revisar estado antes de empezar:
+
+```bash
+git status
+```
+
+Crear una rama por capa de trabajo:
+
+```bash
+git checkout -b capa-nombre-del-trabajo
+```
+
+Agregar cambios:
+
+```bash
+git add .
+```
+
+Crear commit:
+
+```bash
+git commit -m "Describe el cambio aplicado"
+```
+
+Subir rama:
+
+```bash
+git push -u origin capa-nombre-del-trabajo
+```
+
+Recomendacion: trabajar por capas pequenas y verificables. Evitar mezclar cambios funcionales, visuales y migraciones en un mismo commit salvo que esten directamente relacionados.
 
 ## Pruebas manuales recomendadas
-1. Abrir una caja y verificar que `saldo_final` inicial queda igual a `saldo_inicial` antes de movimientos.
-2. Realizar una venta confirmada y comprobar que se genera `MovimientoCaja` de tipo `INGRESO`.
-3. Anular esa venta y comprobar que se crea un movimiento `EGRESO` de reversión con mismo monto.
-4. Cerrar la caja y verificar que `Caja.calcular_saldo()` usa `INGRESO` menos `EGRESO`, sin sumar `ARQUEO`.
-5. Registrar un arqueo de caja y confirmar que aparece en la lista de movimientos, pero no altera el saldo final operado.
-6. Revisar el historial de `MovimientoStock` para asegurar que la anulación repone stock y registra `ENTRADA`.
+
+- Crear producto.
+- Editar producto.
+- Crear venta manual.
+- Crear venta usando codigo de barras.
+- Escanear varias veces el mismo producto y verificar cantidades.
+- Editar cantidad manual en carrito.
+- Confirmar venta.
+- Revisar ticket.
+- Anular venta.
+- Revisar caja y movimientos de reversa.
+- Crear venta a cuenta corriente.
+- Registrar pago parcial y total de cliente.
+- Revisar cuentas corrientes.
+- Revisar reporte de ventas.
+- Revisar reporte de compras.
+- Revisar reporte de stock.
+- Exportar PDF/Excel cuando corresponda.
+- Revisar que no aparezcan datos de otro negocio.
+- Navegar el sistema en pantalla mediana o angosta.
+
+## Pendientes sugeridos
+
+- Responsive avanzado para pantallas complejas y tablas grandes.
+- Mas metricas y graficos en dashboard/reportes.
+- Optimizacion de consultas y uso de `select_related`/`prefetch_related` donde haga falta.
+- Pruebas automatizadas para ventas, caja, stock, cuentas corrientes y reportes.
+- Documentacion tecnica mas profunda de modelos, permisos y flujos.
+- Preparacion para despliegue productivo: variables seguras, `DEBUG=False`, backups, logs, HTTPS y servidor WSGI/ASGI.
+- Revision de permisos por rol con usuarios reales.
+
+## Notas de mantenimiento
+
+- No hardcodear credenciales en el codigo.
+- No borrar ventas, pagos, movimientos ni historial operativo.
+- No crear migraciones sin revisar impacto en datos existentes.
+- Validar siempre con `python manage.py check` antes de cerrar una capa.
+- Comparar exportaciones contra la pantalla correspondiente cuando se ajusten reportes.

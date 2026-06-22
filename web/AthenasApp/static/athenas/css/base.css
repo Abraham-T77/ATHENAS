@@ -574,3 +574,207 @@ section.list-section > .tabla{
     margin-right:14px;
   }
 }
+
+/* === Capa final de pulido visual general === */
+.app-footer{
+  border-top:1px solid rgba(255,255,255,.08);
+  color:var(--muted);
+  margin-top:32px;
+  padding:18px 0 26px;
+  text-align:center;
+}
+
+.panel,
+.tarjeta,
+.list-section,
+.form-section,
+.table-wrap,
+.carrito,
+.cuenta-card,
+.reporte-card,
+.chart-container{
+  border-color:rgba(255,255,255,.09);
+}
+
+.panel > h1:first-child,
+.tarjeta > h1:first-child,
+.list-section > .page-header h1{
+  letter-spacing:0;
+}
+
+.panel > h1:first-child::after,
+.tarjeta > h1:first-child::after,
+.page-header h1::after{
+  background:linear-gradient(90deg,var(--primary),transparent);
+  content:"";
+  display:block;
+  height:2px;
+  margin-top:.55rem;
+  max-width:150px;
+}
+
+.page-subtitle,
+.intro,
+.report-note{
+  color:var(--muted);
+}
+
+.page-actions,
+.acciones,
+.filter-bar,
+.filtros{
+  align-items:flex-end;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.65rem;
+}
+
+.filtros{
+  background:rgba(15,20,28,.72);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  margin:1rem 0;
+  padding:14px;
+}
+
+.filtros label{
+  font-size:.88rem;
+  font-weight:700;
+}
+
+.filtros input,
+.filtros select{
+  min-width:170px;
+}
+
+.table,
+.tabla{
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 8px 22px rgba(0,0,0,.18);
+}
+
+.table th,
+.tabla th{
+  position:relative;
+}
+
+.table td,
+.tabla td{
+  color:#d7dee8;
+}
+
+.table td a,
+.tabla td a{
+  font-weight:600;
+}
+
+.table-empty,
+.empty-state,
+td[colspan]{
+  color:var(--muted);
+}
+
+.form-section,
+.grid-venta,
+.page-filters,
+.datos{
+  box-shadow:0 8px 22px rgba(0,0,0,.16);
+}
+
+.form-actions,
+.page-actions,
+.acciones{
+  row-gap:.75rem;
+}
+
+.btn,
+.btn-sm,
+.btn-primary,
+.btn-secondary{
+  white-space:nowrap;
+}
+
+.estado-badge,
+.stock-badge,
+.report-status,
+.cuenta-badge,
+.venta-status-badge,
+.venta-pay-badge{
+  letter-spacing:0;
+}
+
+input[readonly],
+.form-control[readonly]{
+  background:#111923;
+  color:#cbd5e1;
+}
+
+@media (max-width:900px){
+  .navbar .contenedor{
+    align-items:stretch;
+  }
+
+  .menu{
+    justify-content:flex-start;
+    max-width:100%;
+    overflow-x:auto;
+    scrollbar-width:thin;
+  }
+
+  .navbar-badges{
+    justify-content:flex-start;
+  }
+}
+
+@media (max-width:768px){
+  .table,
+  .tabla{
+    display:block;
+    max-width:100%;
+    overflow-x:auto;
+    white-space:nowrap;
+  }
+
+  .filtros input,
+  .filtros select,
+  .filtros .btn,
+  .filter-bar input,
+  .filter-bar select,
+  .filter-bar .btn{
+    width:100%;
+  }
+
+  .acciones .btn,
+  .acciones .btn-sm,
+  .page-actions .btn,
+  .page-actions .btn-sm{
+    width:100%;
+  }
+
+  .panel > h1:first-child,
+  .tarjeta > h1:first-child{
+    font-size:1.35rem;
+  }
+}
+
+@media (max-width:520px){
+  body{
+    background:var(--bg);
+  }
+
+  .container,
+  .contenedor{
+    width:min(100% - 18px, 1180px);
+  }
+
+  .panel,
+  .tarjeta,
+  .form-section{
+    border-radius:10px;
+    padding:14px;
+  }
+
+  .dashboard-card{
+    min-height:auto;
+  }
+}

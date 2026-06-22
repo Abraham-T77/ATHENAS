@@ -28,7 +28,7 @@
         <label for="{{ form.categoria.id_for_label }}" class="font-semibold">Categoría</label>
         <div style="display:flex; gap:.5rem; align-items:center;">
           <div style="flex:1;">{{ form.categoria }}</div>
-          <a class="btn btn-outline-primary"
+          <a class="btn btn-outline-primary js-save-product-draft"
              href="{% url 'categoria_nueva' %}?next={{ request.get_full_path|urlencode }}">+ Cat.</a>
         </div>
         {% if form.categoria.errors %}<div class="text-red-600 text-sm mt-1">{{ form.categoria.errors|join:", " }}</div>{% endif %}
@@ -39,7 +39,7 @@
         <label for="{{ form.marca.id_for_label }}" class="font-semibold">Marca</label>
         <div style="display:flex; gap:.5rem; align-items:center;">
           <div style="flex:1;">{{ form.marca }}</div>
-          <a class="btn btn-outline-primary"
+          <a class="btn btn-outline-primary js-save-product-draft"
              href="{% url 'marca_nueva' %}?next={{ request.get_full_path|urlencode }}">+ Marca</a>
         </div>
         {% if form.marca.errors %}<div class="text-red-600 text-sm mt-1">{{ form.marca.errors|join:", " }}</div>{% endif %}
@@ -50,7 +50,7 @@
         <label for="{{ form.unidad.id_for_label }}" class="font-semibold">Unidad</label>
         <div style="display:flex; gap:.5rem; align-items:center;">
           <div style="flex:1;">{{ form.unidad }}</div>
-          <a class="btn btn-outline-primary"
+          <a class="btn btn-outline-primary js-save-product-draft"
              href="{% url 'unidad_nueva' %}?next={{ request.get_full_path|urlencode }}">+ Unidad</a>
         </div>
         {% if form.unidad.errors %}<div class="text-red-600 text-sm mt-1">{{ form.unidad.errors|join:", " }}</div>{% endif %}
@@ -159,6 +159,61 @@
     });
   }
 
+  function productFormDraft() {
+    var form = document.querySelector('form[method="post"]');
+    if (!form || !window.sessionStorage) return;
+
+    var storageKey = 'athenas:producto:nuevo:draft';
+    var hasServerErrors = !!form.querySelector('.alert-danger, .text-red-600');
+
+    function getFields() {
+      return Array.prototype.slice.call(form.querySelectorAll('input[name], select[name], textarea[name]'))
+        .filter(function(field) {
+          return field.name !== 'csrfmiddlewaretoken';
+        });
+    }
+
+    function saveDraft() {
+      var data = {};
+      getFields().forEach(function(field) {
+        data[field.name] = field.type === 'checkbox' ? field.checked : field.value;
+      });
+      sessionStorage.setItem(storageKey, JSON.stringify(data));
+    }
+
+    function restoreDraft() {
+      if (hasServerErrors) return;
+
+      var raw = sessionStorage.getItem(storageKey);
+      if (!raw) return;
+
+      try {
+        var data = JSON.parse(raw);
+        getFields().forEach(function(field) {
+          if (!Object.prototype.hasOwnProperty.call(data, field.name)) return;
+          if (field.type === 'checkbox') {
+            field.checked = !!data[field.name];
+          } else {
+            field.value = data[field.name];
+          }
+        });
+        calcPV();
+      } catch (error) {
+        sessionStorage.removeItem(storageKey);
+      }
+    }
+
+    document.querySelectorAll('.js-save-product-draft').forEach(function(link) {
+      link.addEventListener('click', saveDraft);
+    });
+
+    form.addEventListener('submit', function() {
+      sessionStorage.removeItem(storageKey);
+    });
+
+    restoreDraft();
+  }
+
   ['id_precio_compra','id_margen_ganancia'].forEach(function(id){
     var el = document.getElementById(id);
     if (el) {
@@ -168,6 +223,7 @@
   });
 
   preventBarcodeEnterSubmit();
+  productFormDraft();
 })();
 </script>
 {% endblock %}

@@ -7,6 +7,7 @@
 
   <form method="post" novalidate class="space-y-4" style="max-width: 980px;">
     {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
 
     {% if form.non_field_errors %}
       <div class="alert alert-danger">{{ form.non_field_errors }}</div>
@@ -32,7 +33,7 @@
 
     <div class="form-actions" style="display:flex; gap:.75rem; margin-top:1rem;">
       <button type="submit" class="btn btn-success">Guardar</button>
-      <a href="{% url 'productos_crear' %}" class="btn btn-secondary">Cancelar</a>
+      <a href="{{ next }}" class="btn btn-secondary">Cancelar</a>
     </div>
   </form>
 </section>

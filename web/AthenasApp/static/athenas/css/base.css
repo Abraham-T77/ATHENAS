@@ -108,6 +108,12 @@ a{color:var(--primary);text-decoration:none}
 .estado-badge.ok{background:#123b2a;color:#a7f3d0;border-color:#205c49}
 .estado-badge.off{background:#3a2a2a;color:#fca5a5;border-color:#5a3d3d}
 .fila-inactiva{opacity:.6}
+.stock-badge{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:.25rem .55rem;border-radius:999px;font-size:.84rem;font-weight:700;border:1px solid #243042;white-space:nowrap}
+.stock-badge-ok{background:#123b2a;color:#a7f3d0;border-color:#205c49}
+.stock-badge-low{background:#3f3b1a;color:#fcd34d;border-color:#665c1f}
+.stock-badge-critical{background:#4b1e1e;color:#fca5a5;border-color:#703232}
+.product-filter-actions{display:flex;flex-direction:row;gap:.5rem;align-items:flex-end}
+.product-filter-actions .btn{width:auto}
 
 /* responsive dashboard */
 @media (max-width:768px){
@@ -175,6 +181,8 @@ a{color:var(--primary);text-decoration:none}
   .page-actions-right{text-align:left;width:100%}
   .page-filters{flex-direction:column;align-items:stretch}
   .page-filters-group input,.page-filters-group select{min-width:100%}
+  .product-filter-actions{flex-direction:column;align-items:stretch}
+  .product-filter-actions .btn{width:100%}
   .form-group-row{grid-template-columns:1fr}
 }
 

@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 
 # Extras para usuarios y búsquedas
 from django.contrib.auth.models import User
@@ -101,6 +102,21 @@ def _negocio_id_actual(request):
     return request.session.get('negocio_id')
 
 
+def permiso_denegado(request, exception=None):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    messages.warning(request, "No tenés permisos para acceder a esa sección.")
+    return redirect('dashboard')
+
+
+def _safe_next_url(request, fallback):
+    next_url = request.GET.get("next") or request.POST.get("next") or fallback
+    if url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return next_url
+    return fallback
+
+
 @login_required
 @requiere_negocio
 @permission_required(f'{APP_PROD}.view_{MN_PROD}', raise_exception=True)
@@ -137,6 +153,11 @@ def productos_lista(request):
 
     paginator = Paginator(qs, 20)
     page_obj = paginator.get_page(request.GET.get("page"))
+    params = request.GET.copy()
+    params.pop("page", None)
+    page_querystring = params.urlencode()
+    if page_querystring:
+        page_querystring += "&"
 
     categorias = Categoria.objects.filter(negocio_id=neg_id).order_by("nombre")
     marcas = Marca.objects.filter(negocio_id=neg_id).order_by("nombre")
@@ -147,6 +168,7 @@ def productos_lista(request):
         "cat_sel": cat,
         "mar_sel": mar,
         "activo_sel": activo,
+        "page_querystring": page_querystring,
         "categorias": categorias,
         "marcas": marcas,
     })
@@ -232,7 +254,7 @@ def productos_toggle_activo(request, pk):
 @requiere_negocio
 @permission_required(f'{APP_CAT}.add_{MN_CAT}', raise_exception=True)
 def categoria_nueva(request):
-    next_url = request.GET.get("next") or request.POST.get("next") or reverse('productos_crear')
+    next_url = _safe_next_url(request, reverse('productos_crear'))
     if request.method == "POST":
         form = CategoriaForm(request.POST, request=request)
         if form.is_valid():
@@ -249,7 +271,7 @@ def categoria_nueva(request):
 @requiere_negocio
 @permission_required(f'{APP_MAR}.add_{MN_MAR}', raise_exception=True)
 def marca_nueva(request):
-    next_url = request.GET.get("next") or request.POST.get("next") or reverse('productos_crear')
+    next_url = _safe_next_url(request, reverse('productos_crear'))
     if request.method == "POST":
         form = MarcaForm(request.POST, request=request)
         if form.is_valid():
@@ -266,7 +288,7 @@ def marca_nueva(request):
 @requiere_negocio
 @permission_required(f'{APP_UNI}.add_{MN_UNI}', raise_exception=True)
 def unidad_nueva(request):
-    next_url = request.GET.get("next") or request.POST.get("next") or reverse('productos_crear')
+    next_url = _safe_next_url(request, reverse('productos_crear'))
     if request.method == "POST":
         form = UnidadMedidaForm(request.POST)
         if form.is_valid():

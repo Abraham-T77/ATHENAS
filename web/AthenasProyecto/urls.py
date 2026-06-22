@@ -9,6 +9,8 @@ urlpatterns = [
     path('', include('AthenasApp.urls')),
 ]
 
+handler403 = 'AthenasApp.views.permiso_denegado'
+
 # Servir archivos de MEDIA en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -25,7 +25,7 @@
       <select name="cat" class="form-select">
         <option value="">Todas</option>
         {% for c in categorias %}
-          <option value="{{ c.id }}" {% if cat_sel|default:"" == c.id|stringformat:"s" %}selected{% endif %}>{{ c.nombre }}</option>
+          <option value="{{ c.pk }}" {% if cat_sel|default:"" == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.nombre }}</option>
         {% endfor %}
       </select>
     </div>
@@ -35,7 +35,7 @@
       <select name="mar" class="form-select">
         <option value="">Todas</option>
         {% for m in marcas %}
-          <option value="{{ m.id }}" {% if mar_sel|default:"" == m.id|stringformat:"s" %}selected{% endif %}>{{ m.nombre }}</option>
+          <option value="{{ m.pk }}" {% if mar_sel|default:"" == m.pk|stringformat:"s" %}selected{% endif %}>{{ m.nombre }}</option>
         {% endfor %}
       </select>
     </div>
@@ -49,9 +49,9 @@
       </select>
     </div>
 
-    <div class="page-filters-group">
+    <div class="page-filters-group product-filter-actions">
       <button class="btn btn-primary" type="submit">Filtrar</button>
-      <a href="{% url 'productos_lista' %}" class="btn btn-outline-secondary" style="width:100%">Limpiar</a>
+      <a href="{% url 'productos_lista' %}" class="btn btn-outline-secondary">Limpiar</a>
     </div>
   </form>
 
@@ -82,7 +82,15 @@
                 <td>{{ p.marca }}</td>
                 <td>{{ p.unidad }}</td>
                 <td>${{ p.precio_venta|floatformat:2 }}</td>
-                <td>{{ p.stock_actual }}</td>
+                <td>
+                  {% if p.stock_actual <= 0 %}
+                    <span class="stock-badge stock-badge-critical">{{ p.stock_actual }} / min {{ p.stock_minimo }}</span>
+                  {% elif p.stock_actual <= p.stock_minimo %}
+                    <span class="stock-badge stock-badge-low">{{ p.stock_actual }} / min {{ p.stock_minimo }}</span>
+                  {% else %}
+                    <span class="stock-badge stock-badge-ok">{{ p.stock_actual }} / min {{ p.stock_minimo }}</span>
+                  {% endif %}
+                </td>
                 <td>
                   <span class="estado-badge {% if p.activo %}ok{% else %}off{% endif %}">
                     {% if p.activo %}Activo{% else %}Inactivo{% endif %}
@@ -108,12 +116,12 @@
     <div class="d-flex gap-2 mt-4 align-items-center" style="justify-content:flex-start;">
       {% if page_obj.has_previous %}
         <a class="btn btn-outline-secondary"
-           href="?page={{ page_obj.previous_page_number }}&q={{ q|urlencode }}&cat={{ cat_sel }}&mar={{ mar_sel }}&activo={{ activo_sel }}">← Anterior</a>
+           href="?{{ page_querystring }}page={{ page_obj.previous_page_number }}">← Anterior</a>
       {% endif %}
       <span style="color:var(--muted);">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
       {% if page_obj.has_next %}
         <a class="btn btn-outline-secondary"
-           href="?page={{ page_obj.next_page_number }}&q={{ q|urlencode }}&cat={{ cat_sel }}&mar={{ mar_sel }}&activo={{ activo_sel }}">Siguiente →</a>
+           href="?{{ page_querystring }}page={{ page_obj.next_page_number }}">Siguiente →</a>
       {% endif %}
     </div>
   {% endif %}

@@ -11,6 +11,7 @@
 <section class="list-section">
   <div class="page-header">
     <h1>Cuentas Corrientes de Clientes</h1>
+    <p class="page-subtitle">Total filtrado: ${{ total_deuda|floatformat:2 }}</p>
   </div>
 
   <form method="get" class="page-filters" style="margin: 1rem 0; display:flex; gap:.5rem; flex-wrap:wrap;">
@@ -34,15 +35,19 @@
       {% for c in clientes %}
       <tr class="{% if c.saldo_cuenta_corriente > 0 %}deudor{% endif %}">
         <td>{{ c.nombre }}</td>
-        <td>{{ c.dni|default:"—" }}</td>
-        <td>{{ c.email|default:"—" }}</td>
-        <td class="r">${{ c.saldo_cuenta_corriente }}</td>
+        <td>{{ c.dni|default:"-" }}</td>
+        <td>{{ c.email|default:"-" }}</td>
+        <td class="r">
+          <span class="cuenta-badge {% if c.saldo_cuenta_corriente > 0 %}cuenta-badge-debe{% else %}cuenta-badge-saldada{% endif %}">
+            ${{ c.saldo_cuenta_corriente|floatformat:2 }}
+          </span>
+        </td>
         <td>
           <a href="{% url 'cuentas_clientes_detalle' c.id_cliente %}" class="btn-sm">Detalle</a>
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="5">No se encontraron clientes con movimientos.</td></tr>
+      <tr><td colspan="5">No se encontraron clientes.</td></tr>
       {% endfor %}
     </tbody>
   </table>

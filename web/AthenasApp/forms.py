@@ -181,6 +181,11 @@ class ClienteForm(forms.ModelForm):
         self.fields['email'].widget.attrs.setdefault('placeholder', 'email@dominio.com (opcional)')
         self.fields['telefono'].widget.attrs.setdefault('placeholder', 'Ej: 387-5555555')
         self.fields['direccion'].widget.attrs.setdefault('placeholder', 'Calle 123')
+        self.fields['saldo_cuenta_corriente'].disabled = True
+        self.fields['saldo_cuenta_corriente'].initial = self.instance.saldo_cuenta_corriente or 0
+        self.fields['saldo_cuenta_corriente'].help_text = (
+            'Se actualiza desde ventas a cuenta corriente y pagos registrados.'
+        )
         # Opcionales
         self.fields['dni'].required = False
         self.fields['email'].required = False

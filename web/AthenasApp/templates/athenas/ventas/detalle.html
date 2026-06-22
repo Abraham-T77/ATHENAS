@@ -15,7 +15,10 @@
 
   <div class="datos">
     <div><strong>Fecha:</strong> {{ venta.fecha|date:"d/m/Y H:i" }}</div>
-    <div><strong>Forma de pago:</strong> {{ venta.forma_pago }}</div>
+    <div>
+      <strong>Forma de pago:</strong>
+      {% if venta.forma_pago == 'CUENTA_CORRIENTE' %}Cuenta corriente{% else %}{{ venta.get_forma_pago_display }}{% endif %}
+    </div>
     <div>
       <strong>Estado:</strong>
       <span class="venta-status-badge venta-status-{{ venta.estado|lower }}">{{ venta.get_estado_display }}</span>
@@ -48,7 +51,7 @@
   <h3>Pagos</h3>
   <ul>
     {% for p in pagos %}
-      <li>{{ p.metodo }}: ${{ p.monto }}</li>
+      <li>{% if p.metodo == 'CUENTA_CORRIENTE' %}Cuenta corriente{% else %}{{ p.get_metodo_display }}{% endif %}: ${{ p.monto }}</li>
     {% endfor %}
   </ul>
   {% endif %}

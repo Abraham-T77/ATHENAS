@@ -8,16 +8,30 @@
 
 {% block content %}
 <section class="panel">
-  <h1>Registrar Pago – {{ cliente.nombre }}</h1>
+  <h1>Registrar Pago - {{ cliente.nombre }}</h1>
 
+  <div class="datos">
+    <p><strong>Saldo actual:</strong> ${{ saldo_actual|floatformat:2 }}</p>
+    <p><strong>Cliente:</strong> {{ cliente.nombre }}</p>
+  </div>
+
+  {% if saldo_actual > 0 %}
   <form method="post" class="grid-venta" style="margin-top:.75rem;">
     {% csrf_token %}
     <div>
       <label>Monto</label>
-      <input type="number" name="monto" step="0.01" min="0.01" class="form-control" required>
+      <input type="number" name="monto" step="0.01" min="0.01" max="{{ saldo_actual }}" class="form-control" required>
     </div>
     <div>
-      <label>Descripción (opcional)</label>
+      <label>Metodo de pago</label>
+      <select name="metodo_pago" class="form-control">
+        {% for value, label in metodos_pago %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div style="grid-column:1/-1;">
+      <label>Descripcion (opcional)</label>
       <input type="text" name="descripcion" class="form-control">
     </div>
 
@@ -26,5 +40,11 @@
       <a href="{% url 'cuentas_clientes_detalle' cliente.id_cliente %}" class="btn btn-light">Cancelar</a>
     </div>
   </form>
+  {% else %}
+    <p class="cuenta-ok">Este cliente no registra deuda pendiente.</p>
+    <div class="acciones">
+      <a href="{% url 'cuentas_clientes_detalle' cliente.id_cliente %}" class="btn">Volver</a>
+    </div>
+  {% endif %}
 </section>
 {% endblock %}

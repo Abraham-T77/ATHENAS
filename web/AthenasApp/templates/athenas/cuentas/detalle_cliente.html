@@ -1,7 +1,7 @@
 {% extends "athenas/base.html" %}
 {% load static %}
 
-{% block title %}Detalle Cuenta Corriente – {{ cliente.nombre }}{% endblock %}
+{% block title %}Detalle Cuenta Corriente - {{ cliente.nombre }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'athenas/css/cuentas.css' %}">
@@ -12,39 +12,50 @@
   <h1>Cuenta Corriente de {{ cliente.nombre }}</h1>
 
   <div class="datos">
-    <p><strong>DNI:</strong> {{ cliente.dni|default:"—" }}</p>
-    <p><strong>Email:</strong> {{ cliente.email|default:"—" }}</p>
-    <p><strong>Saldo Actual:</strong> ${{ saldo_actual }}</p>
+    <p><strong>DNI:</strong> {{ cliente.dni|default:"-" }}</p>
+    <p><strong>Email:</strong> {{ cliente.email|default:"-" }}</p>
+    <p><strong>Saldo actual:</strong> ${{ saldo_actual|floatformat:2 }}</p>
+    <p><strong>Ventas C/C confirmadas:</strong> ${{ total_ventas|floatformat:2 }}</p>
+    <p><strong>Pagos registrados:</strong> ${{ total_pagos|floatformat:2 }}</p>
   </div>
 
-  <h2>Ventas (a crédito / asociadas)</h2>
+  <h2>Movimientos de cuenta corriente</h2>
   <table class="tabla">
     <thead>
       <tr>
         <th>Fecha</th>
-        <th>N° Ticket</th>
+        <th>Concepto</th>
+        <th>Tipo</th>
         <th class="r">Importe</th>
       </tr>
     </thead>
     <tbody>
-      {% for v in ventas %}
-      <tr>
-        <td>{{ v.fecha|date:"d/m/Y" }}</td>
-        <td>{{ v.numero_ticket }}</td>
-        <td class="r">${{ v.total_neto }}</td>
+      {% for m in movimientos %}
+      <tr class="{% if m.tipo == 'ANULADA' %}cuenta-anulada{% elif m.tipo == 'PAGO' %}cuenta-pago{% elif m.tipo == 'DEBE' %}cuenta-debe{% endif %}">
+        <td>{{ m.fecha|date:"d/m/Y H:i" }}</td>
+        <td>
+          {% if m.venta %}
+            <a href="{% url 'venta_detalle' m.venta.pk %}">{{ m.concepto }}</a>
+          {% else %}
+            {{ m.concepto }}
+          {% endif %}
+        </td>
+        <td><span class="cuenta-badge cuenta-badge-{{ m.tipo|lower }}">{{ m.tipo }}</span></td>
+        <td class="r">${{ m.monto|floatformat:2 }}</td>
       </tr>
       {% empty %}
-      <tr><td colspan="3">No hay ventas registradas.</td></tr>
+      <tr><td colspan="4">No hay movimientos registrados.</td></tr>
       {% endfor %}
     </tbody>
   </table>
 
+  {% if pagos %}
   <h2>Pagos del cliente</h2>
   <table class="tabla">
     <thead>
       <tr>
         <th>Fecha</th>
-        <th>Descripción</th>
+        <th>Descripcion</th>
         <th class="r">Monto</th>
       </tr>
     </thead>
@@ -53,16 +64,19 @@
       <tr>
         <td>{{ p.fecha|date:"d/m/Y H:i" }}</td>
         <td>{{ p.descripcion|default:"Pago" }}</td>
-        <td class="r">${{ p.monto }}</td>
+        <td class="r">${{ p.monto|floatformat:2 }}</td>
       </tr>
-      {% empty %}
-      <tr><td colspan="3">No hay pagos registrados.</td></tr>
       {% endfor %}
     </tbody>
   </table>
+  {% endif %}
 
   <div class="acciones">
-    <a href="{% url 'cuentas_cliente_pago' cliente.id_cliente %}" class="btn-primary">Registrar Pago</a>
+    {% if saldo_actual > 0 %}
+      <a href="{% url 'cuentas_cliente_pago' cliente.id_cliente %}" class="btn-primary">Registrar Pago</a>
+    {% else %}
+      <span class="cuenta-ok">Cuenta saldada</span>
+    {% endif %}
     <a href="{% url 'cuenta_corriente_clientes' %}" class="btn">Volver</a>
   </div>
 </section>

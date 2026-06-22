@@ -21,6 +21,7 @@ FORMA_PAGO_EFECTIVO = Venta.FP_EFECTIVO
 FORMA_PAGO_TARJETA = Venta.FP_TARJETA
 FORMA_PAGO_TRANSFERENCIA = Venta.FP_TRANSFERENCIA
 FORMA_PAGO_MIXTO = Venta.FP_MIXTO
+FORMA_PAGO_CUENTA_CORRIENTE = "CUENTA_CORRIENTE"
 
 ESTADO_BORRADOR = "BORRADOR"
 ESTADO_CONFIRMADA = "CONFIRMADA"
@@ -56,7 +57,7 @@ def ventas_lista(request):
         "f_estado": estado,
         "f_forma": forma,
         "estados": Venta.ESTADOS,
-        "formas_pago": Venta.FORMAS_PAGO,
+        "formas_pago": list(Venta.FORMAS_PAGO) + [(FORMA_PAGO_CUENTA_CORRIENTE, "Cuenta corriente")],
     }
     return render(request, 'athenas/ventas/lista.html', ctx)
 
@@ -80,7 +81,7 @@ def venta_nueva(request):
         descs    = request.POST.getlist('desc_item_pct[]')  # opcional
 
         forma_pago = request.POST.get('forma_pago') or FORMA_PAGO_EFECTIVO
-        if forma_pago not in [FORMA_PAGO_EFECTIVO, FORMA_PAGO_TARJETA, FORMA_PAGO_TRANSFERENCIA, FORMA_PAGO_MIXTO]:
+        if forma_pago not in [FORMA_PAGO_EFECTIVO, FORMA_PAGO_TARJETA, FORMA_PAGO_TRANSFERENCIA, FORMA_PAGO_MIXTO, FORMA_PAGO_CUENTA_CORRIENTE]:
             forma_pago = FORMA_PAGO_EFECTIVO
         cliente_id = request.POST.get('cliente_id') or None
         desc_global_pct = request.POST.get('descuento_global_pct') or ""
@@ -97,6 +98,10 @@ def venta_nueva(request):
             messages.error(request, "El descuento global debe estar entre 0 y 100.")
             return redirect('venta_nueva')
 
+        if forma_pago == FORMA_PAGO_CUENTA_CORRIENTE and not cliente_id:
+            messages.error(request, "Una venta a cuenta corriente requiere un cliente valido.")
+            return redirect('venta_nueva')
+
         # Si no hay cliente, crear/usar "Consumidor Final"
         if not cliente_id:
             consumidor_final, _ = Clientes.objects.get_or_create(
@@ -105,6 +110,11 @@ def venta_nueva(request):
                 defaults={"activo": True}
             )
             cliente_id = consumidor_final.id_cliente
+        elif forma_pago == FORMA_PAGO_CUENTA_CORRIENTE:
+            cliente_cc = get_object_or_404(Clientes, pk=cliente_id, negocio_id=neg_id, activo=True)
+            if cliente_cc.nombre.strip().lower() == "consumidor final":
+                messages.error(request, "Consumidor Final no puede registrar deuda en cuenta corriente.")
+                return redirect('venta_nueva')
 
         # Sanitizar items del carrito
         items = []
@@ -254,7 +264,16 @@ def venta_nueva(request):
                 )
 
             # === Registrar pagos + movimientos de caja ===
-            if forma_pago == FORMA_PAGO_MIXTO:
+            if forma_pago == FORMA_PAGO_CUENTA_CORRIENTE:
+                VentaPago.objects.create(
+                    venta=venta,
+                    metodo=FORMA_PAGO_CUENTA_CORRIENTE,
+                    monto=total_neto
+                )
+                Clientes.objects.filter(pk=cliente_id).update(
+                    saldo_cuenta_corriente=models.F('saldo_cuenta_corriente') + total_neto
+                )
+            elif forma_pago == FORMA_PAGO_MIXTO:
                 partes = []
                 for key in ['pago_efectivo', 'pago_tarjeta', 'pago_transferencia']:
                     raw = request.POST.get(key) or ""
@@ -331,6 +350,7 @@ def venta_nueva(request):
             FORMA_PAGO_TARJETA,
             FORMA_PAGO_TRANSFERENCIA,
             FORMA_PAGO_MIXTO,
+            FORMA_PAGO_CUENTA_CORRIENTE,
         ],
     }
     return render(request, 'athenas/ventas/crear.html', ctx)

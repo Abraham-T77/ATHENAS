@@ -72,7 +72,11 @@
               {% endif %}
             </td>
 
-            <td><span class="venta-pay-badge">{{ v.get_forma_pago_display }}</span></td>
+            <td>
+              <span class="venta-pay-badge">
+                {% if v.forma_pago == 'CUENTA_CORRIENTE' %}Cuenta corriente{% else %}{{ v.get_forma_pago_display }}{% endif %}
+              </span>
+            </td>
             <td>
               <span class="venta-status-badge venta-status-{{ v.estado|lower }}">
                 {{ v.get_estado_display }}

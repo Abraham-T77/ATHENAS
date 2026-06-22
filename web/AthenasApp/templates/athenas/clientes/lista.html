@@ -64,7 +64,11 @@
                 <td>{{ c.telefono|default:"-" }}</td>
                 <td>{{ c.email|default:"-" }}</td>
                 <td>{{ c.direccion|default:"-" }}</td>
-                <td>${{ c.saldo_cuenta_corriente|floatformat:2 }}</td>
+                <td>
+                  <span class="estado-badge {% if c.saldo_cuenta_corriente > 0 %}off{% else %}ok{% endif %}">
+                    ${{ c.saldo_cuenta_corriente|floatformat:2 }}
+                  </span>
+                </td>
                 <td>
                   <span class="estado-badge {% if c.activo %}ok{% else %}off{% endif %}">
                     {% if c.activo %}Activo{% else %}Inactivo{% endif %}
@@ -76,6 +80,9 @@
                     <a class="btn btn-sm btn-outline-secondary" href="{% url 'clientes_toggle' c.pk %}">
                       {% if c.activo %}Dar de baja{% else %}Dar de alta{% endif %}
                     </a>
+                  {% endif %}
+                  {% if perms.AthenasApp.can_view_cuentas_corrientes %}
+                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'cuentas_clientes_detalle' c.pk %}">C/C</a>
                   {% endif %}
                 </td>
               </tr>

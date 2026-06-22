@@ -23,7 +23,7 @@
     <div><span>Ticket</span><strong>{{ venta.numero_ticket }}</strong></div>
     <div><span>Fecha</span><strong>{{ venta.fecha|date:"d/m/Y H:i" }}</strong></div>
     <div><span>Cliente</span><strong>{% if venta.cliente %}{{ venta.cliente.nombre }}{% else %}Consumidor Final{% endif %}</strong></div>
-    <div><span>Forma de pago</span><strong>{{ venta.get_forma_pago_display }}</strong></div>
+    <div><span>Forma de pago</span><strong>{% if venta.forma_pago == 'CUENTA_CORRIENTE' %}Cuenta corriente{% else %}{{ venta.get_forma_pago_display }}{% endif %}</strong></div>
   </section>
 
   <table class="ticket-table">
@@ -59,7 +59,7 @@
   <section class="ticket-payments">
     <h3>Pagos</h3>
     {% for pago in pagos %}
-      <div><span>{{ pago.get_metodo_display }}</span><strong>${{ pago.monto|floatformat:2 }}</strong></div>
+      <div><span>{% if pago.metodo == 'CUENTA_CORRIENTE' %}Cuenta corriente{% else %}{{ pago.get_metodo_display }}{% endif %}</span><strong>${{ pago.monto|floatformat:2 }}</strong></div>
     {% endfor %}
   </section>
   {% endif %}

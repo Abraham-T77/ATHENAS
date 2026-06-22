@@ -55,7 +55,7 @@
                 <td>{{ v.fecha|date:"d/m/Y" }}</td>
                 <td>{{ v.numero_ticket }}</td>
                 <td>{{ v.cliente.nombre|default:"—" }}</td>
-                <td>{{ v.forma_pago }}</td>
+                <td>{% if v.forma_pago == 'CUENTA_CORRIENTE' %}Cuenta corriente{% else %}{{ v.get_forma_pago_display }}{% endif %}</td>
                 <td>${{ v.total_neto }}</td>
                 <td><span class="report-status report-status-{{ v.estado|lower }}">{{ v.get_estado_display }}</span></td>
             </tr>

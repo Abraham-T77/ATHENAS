@@ -31,7 +31,7 @@
         <label>Forma de pago:</label>
         <select name="forma_pago" id="forma_pago">
           {% for fp in formas_pago %}
-            <option value="{{ fp }}">{{ fp }}</option>
+            <option value="{{ fp }}">{% if fp == 'CUENTA_CORRIENTE' %}Cuenta corriente{% else %}{{ fp }}{% endif %}</option>
           {% endfor %}
         </select>
       </div>

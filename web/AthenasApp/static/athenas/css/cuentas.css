@@ -69,6 +69,42 @@
   background:rgba(245,158,11,.08);
 }
 
+.cuenta-badge{
+  border-radius:999px;
+  display:inline-flex;
+  font-size:.78rem;
+  font-weight:700;
+  line-height:1;
+  padding:.35rem .6rem;
+  text-transform:uppercase;
+}
+
+.cuenta-badge-debe,
+.cuenta-badge-deudor{
+  background:rgba(245,158,11,.16);
+  color:#fcd34d;
+}
+
+.cuenta-badge-pago,
+.cuenta-badge-saldada{
+  background:rgba(16,185,129,.16);
+  color:#86efac;
+}
+
+.cuenta-badge-anulada{
+  background:rgba(239,68,68,.18);
+  color:#fca5a5;
+}
+
+.cuenta-anulada{
+  opacity:.72;
+}
+
+.cuenta-ok{
+  color:#86efac;
+  font-weight:700;
+}
+
 .cuenta-card{
   background:var(--surface-2);
   border:1px solid rgba(255,255,255,.08);

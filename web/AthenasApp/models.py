@@ -474,6 +474,12 @@ class Venta(models.Model):
                     referencia=str(self.pk)
                 )
 
+        if self.forma_pago == "CUENTA_CORRIENTE" and self.cliente_id:
+            cliente = Clientes.objects.select_for_update().get(pk=self.cliente_id)
+            saldo_actual = cliente.saldo_cuenta_corriente or 0
+            cliente.saldo_cuenta_corriente = max(0, saldo_actual - self.total_neto)
+            cliente.save(update_fields=["saldo_cuenta_corriente"])
+
         self.estado = self.ESTADO_ANULADA
         self.save()
 

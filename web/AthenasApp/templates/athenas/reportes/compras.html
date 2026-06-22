@@ -10,10 +10,17 @@
 {% block content %}
 <section class="panel">
     <h1>Reporte de Compras</h1>
+    <p class="report-note">
+        Por defecto se muestran compras confirmadas. Las anuladas quedan disponibles para auditoria, pero no se computan como compra activa.
+    </p>
+    <div class="report-summary">
+        <span>Total activo confirmado: ${{ total_activo|floatformat:2 }}</span>
+        <span>Total historial filtrado: ${{ total_historial|floatformat:2 }}</span>
+    </div>
 
     {% if grafico %}
     <div class="chart-container">
-        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico" class="chart">
+        <img src="data:image/png;base64,{{ grafico }}" alt="Grafico" class="chart">
     </div>
     {% endif %}
 
@@ -23,6 +30,14 @@
 
         <label>Hasta:</label>
         <input type="date" name="hasta" value="{{ request.GET.hasta }}">
+
+        <label>Estado:</label>
+        <select name="estado">
+            <option value="TODOS" {% if estado == "TODOS" %}selected{% endif %}>Todas</option>
+            {% for value, label in estados %}
+                <option value="{{ value }}" {% if estado == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
 
         <button type="submit" class="btn">Filtrar</button>
     </form>
@@ -39,15 +54,15 @@
         </thead>
         <tbody>
             {% for c in compras %}
-            <tr>
+            <tr class="{% if c.estado == 'ANULADA' %}critico{% endif %}">
                 <td>{{ c.fecha|date:"d/m/Y" }}</td>
-                <td>{{ c.proveedor.razon_social|default:"—" }}</td>
+                <td>{{ c.proveedor.razon_social|default:"-" }}</td>
                 <td>{{ c.forma_pago }}</td>
-                <td>${{ c.total }}</td>
-                <td>{{ c.estado }}</td>
+                <td>${{ c.total|floatformat:2 }}</td>
+                <td><span class="report-status report-status-{{ c.estado|lower }}">{{ c.get_estado_display }}</span></td>
             </tr>
             {% empty %}
-            <tr><td colspan="5">No se encontraron compras en el período seleccionado.</td></tr>
+            <tr><td colspan="5">No se encontraron compras en el periodo seleccionado.</td></tr>
             {% endfor %}
         </tbody>
     </table>

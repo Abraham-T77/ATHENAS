@@ -80,6 +80,25 @@
         </table>
     </div>
 
+    <div class="form-group-row mt-3">
+        <div>
+            <label>Ingresos operativos</label>
+            <input class="form-control" value="${{ resumen_movimientos.ingresos|floatformat:2 }}" readonly>
+        </div>
+        <div>
+            <label>Egresos operativos</label>
+            <input class="form-control" value="${{ resumen_movimientos.egresos|floatformat:2 }}" readonly>
+        </div>
+        <div>
+            <label>Neto operativo</label>
+            <input class="form-control" value="${{ resumen_movimientos.neto_operativo|floatformat:2 }}" readonly>
+        </div>
+        <div>
+            <label>Arqueos registrados</label>
+            <input class="form-control" value="{{ resumen_movimientos.arqueos }}" readonly>
+        </div>
+    </div>
+
     <div class="page-actions mt-3">
         <a href="{% url 'caja_lista' %}" class="btn">Volver</a>
 

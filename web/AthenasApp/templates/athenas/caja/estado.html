@@ -49,6 +49,25 @@
       </div>
     </div>
 
+    <div class="form-group-row mt-3">
+      <div class="col-md-3">
+        <label>Ingresos operativos</label>
+        <input class="form-control" value="${{ resumen_movimientos.ingresos|floatformat:2 }}" readonly>
+      </div>
+      <div class="col-md-3">
+        <label>Egresos operativos</label>
+        <input class="form-control" value="${{ resumen_movimientos.egresos|floatformat:2 }}" readonly>
+      </div>
+      <div class="col-md-3">
+        <label>Neto operativo</label>
+        <input class="form-control" value="${{ resumen_movimientos.neto_operativo|floatformat:2 }}" readonly>
+      </div>
+      <div class="col-md-3">
+        <label>Arqueos registrados</label>
+        <input class="form-control" value="{{ resumen_movimientos.arqueos }}" readonly>
+      </div>
+    </div>
+
     <div class="page-actions mt-4 d-flex gap-2">
       {% if caja_usuario.estado == "ABIERTA" and caja_usuario.caja.estado == "ABIERTA" %}
         <a class="btn btn-outline-danger" href="{% url 'caja_cierre' caja_usuario.caja.pk %}">Cerrar caja</a>

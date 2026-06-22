@@ -259,8 +259,14 @@ def cuenta_detalle_proveedor(request, pk):
     neg_id = _negocio_id_from_request(request)
     proveedor = get_object_or_404(Proveedores, pk=pk, negocio_id=neg_id)
     compras = Compras.objects.filter(proveedor=proveedor).order_by("-fecha")
+    total_compras = (
+        compras
+        .filter(estado=Compras.ESTADO_CONFIRMADA)
+        .aggregate(total=Sum("total"))["total"] or Decimal("0")
+    )
 
     return render(request, "athenas/cuentas/detalle_proveedor.html", {
         "proveedor": proveedor,
         "compras": compras,
+        "total_compras": total_compras,
     })

@@ -152,6 +152,22 @@ section.reportes-panel {
     margin: .25rem 0 1rem;
 }
 
+.report-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    margin: .75rem 0 1rem;
+}
+
+.report-summary span {
+    background: rgba(15, 23, 42, .5);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-weight: 600;
+    padding: .45rem .7rem;
+}
+
 .filtros select {
     background: var(--surface-2);
     border: 1px solid var(--border);
@@ -184,6 +200,26 @@ section.reportes-panel {
 .report-status-borrador {
     background: rgba(148, 163, 184, .18);
     color: #cbd5e1;
+}
+
+.report-status-normal {
+    background: rgba(16, 185, 129, .16);
+    color: #6ee7b7;
+}
+
+.report-status-bajo {
+    background: rgba(245, 158, 11, .18);
+    color: #fcd34d;
+}
+
+.report-status-sin_stock {
+    background: rgba(239, 68, 68, .18);
+    color: #fca5a5;
+}
+
+.venta-total-anulado {
+    color: #fca5a5;
+    text-decoration: line-through;
 }
 
 /* =========================================================

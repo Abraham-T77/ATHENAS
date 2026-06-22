@@ -39,7 +39,7 @@
     </tbody>
   </table>
 
-  <p style="margin-top:.5rem;"><strong>Total de compras:</strong> ${{ total_compras }}</p>
+  <p style="margin-top:.5rem;"><strong>Total de compras confirmadas:</strong> ${{ total_compras|floatformat:2 }}</p>
 
   <div class="acciones">
     <a href="{% url 'cuentas_proveedores' %}" class="btn">Volver</a>

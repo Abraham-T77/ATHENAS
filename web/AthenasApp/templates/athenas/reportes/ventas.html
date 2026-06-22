@@ -13,6 +13,13 @@
     <p class="report-note">
         Por defecto se muestran ventas confirmadas. Las anuladas quedan disponibles para auditoria, pero no se computan como ingreso activo.
     </p>
+    <div class="report-summary">
+        <span>Total activo confirmado: ${{ total_activo|floatformat:2 }}</span>
+        <span>Total historial filtrado: ${{ total_historial|floatformat:2 }}</span>
+        <span>Confirmadas: {{ resumen_estados.confirmadas }}</span>
+        <span>Borrador: {{ resumen_estados.borrador }}</span>
+        <span>Anuladas: {{ resumen_estados.anuladas }}</span>
+    </div>
 
     {% if grafico %}
     <div class="chart-container">
@@ -56,7 +63,13 @@
                 <td>{{ v.numero_ticket }}</td>
                 <td>{{ v.cliente.nombre|default:"—" }}</td>
                 <td>{% if v.forma_pago == 'CUENTA_CORRIENTE' %}Cuenta corriente{% else %}{{ v.get_forma_pago_display }}{% endif %}</td>
-                <td>${{ v.total_neto }}</td>
+                <td>
+                    {% if v.estado == 'ANULADA' %}
+                        <span class="venta-total-anulado">${{ v.total_neto|floatformat:2 }}</span>
+                    {% else %}
+                        ${{ v.total_neto|floatformat:2 }}
+                    {% endif %}
+                </td>
                 <td><span class="report-status report-status-{{ v.estado|lower }}">{{ v.get_estado_display }}</span></td>
             </tr>
             {% empty %}

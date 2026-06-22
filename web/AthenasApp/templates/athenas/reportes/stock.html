@@ -10,15 +10,32 @@
 {% block content %}
 <section class="panel">
     <h1>Reporte de Stock</h1>
+    <p class="report-note">
+        Se muestran solo productos activos del negocio actual. Las ventas anuladas reponen stock desde el flujo de anulacion.
+    </p>
+    <div class="report-summary">
+        <span>Productos: {{ resumen_stock.productos }}</span>
+        <span>Normal: {{ resumen_stock.normal }}</span>
+        <span>Bajo: {{ resumen_stock.bajo }}</span>
+        <span>Sin stock: {{ resumen_stock.sin_stock }}</span>
+        <span>Valor total: ${{ resumen_stock.valor_total|floatformat:2 }}</span>
+    </div>
 
     {% if grafico %}
     <div class="chart-container">
-        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico" class="chart">
+        <img src="data:image/png;base64,{{ grafico }}" alt="Grafico" class="chart">
     </div>
     {% endif %}
 
     <form method="get" class="filtros">
         <input type="text" name="buscar" placeholder="Buscar producto..." value="{{ request.GET.buscar }}">
+        <label>Estado:</label>
+        <select name="estado_stock">
+            <option value="TODOS" {% if estado_stock == "TODOS" %}selected{% endif %}>Todos</option>
+            <option value="NORMAL" {% if estado_stock == "NORMAL" %}selected{% endif %}>Normal</option>
+            <option value="BAJO" {% if estado_stock == "BAJO" %}selected{% endif %}>Bajo</option>
+            <option value="SIN_STOCK" {% if estado_stock == "SIN_STOCK" %}selected{% endif %}>Sin stock</option>
+        </select>
         <button type="submit" class="btn">Buscar</button>
     </form>
 
@@ -26,25 +43,27 @@
         <thead>
             <tr>
                 <th>Producto</th>
-                <th>Categoría</th>
+                <th>Categoria</th>
+                <th>Estado</th>
                 <th>Stock Actual</th>
-                <th>Stock Mínimo</th>
+                <th>Stock Minimo</th>
                 <th>Precio Venta</th>
                 <th>Valor Total</th>
             </tr>
         </thead>
         <tbody>
             {% for p in productos %}
-            <tr class="{% if p.stock_actual <= p.stock_minimo %}critico{% endif %}">
+            <tr class="{% if p.estado_stock == 'SIN_STOCK' or p.estado_stock == 'BAJO' %}critico{% endif %}">
                 <td>{{ p.descripcion }}</td>
-                <td>{{ p.categoria.nombre|default:"—" }}</td>
+                <td>{{ p.categoria.nombre|default:"-" }}</td>
+                <td><span class="report-status report-status-{{ p.estado_stock|lower }}">{{ p.estado_stock }}</span></td>
                 <td class="r">{{ p.stock_actual }}</td>
                 <td class="r">{{ p.stock_minimo }}</td>
-                <td class="r">${{ p.precio_venta }}</td>
+                <td class="r">${{ p.precio_venta|floatformat:2 }}</td>
                 <td class="r">${{ p.valor_total|floatformat:2 }}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="6">No se encontraron productos en inventario.</td></tr>
+            <tr><td colspan="7">No se encontraron productos en inventario.</td></tr>
             {% endfor %}
         </tbody>
     </table>

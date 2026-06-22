@@ -5,12 +5,25 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
+from django.db.models import Sum
 from django.utils import timezone
 
 from .models import Caja, CajaUsuario, MovimientoCaja, LogAuditoria
 from .utils import _negocio_id_from_request, get_usuario_from_request
 from .audit import registrar_auditoria
 from .decorators import requiere_negocio
+
+
+def _resumen_movimientos_caja(movimientos):
+    ingresos = movimientos.filter(tipo="INGRESO").aggregate(total=Sum("monto"))["total"] or 0
+    egresos = movimientos.filter(tipo="EGRESO").aggregate(total=Sum("monto"))["total"] or 0
+    arqueos = movimientos.filter(tipo="ARQUEO").count()
+    return {
+        "ingresos": ingresos,
+        "egresos": egresos,
+        "neto_operativo": ingresos - egresos,
+        "arqueos": arqueos,
+    }
 
 
 # =========================
@@ -144,6 +157,7 @@ def caja_detalle(request, pk):
         "caja": caja,
         "movimientos": movimientos,
         "saldo_calculado": caja.calcular_saldo(),
+        "resumen_movimientos": _resumen_movimientos_caja(movimientos),
     }
     return render(request, "athenas/caja/caja_detalle.html", ctx)
 
@@ -181,6 +195,7 @@ def caja_estado(request):
         "caja_activa": caja_usuario,   # 👈 alias para que el template no rompa
         "movimientos": movimientos,
         "saldo_calculado": caja_usuario.caja.calcular_saldo(),
+        "resumen_movimientos": _resumen_movimientos_caja(movimientos),
     }
     return render(request, "athenas/caja/estado.html", ctx)
 
